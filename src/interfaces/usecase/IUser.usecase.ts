@@ -5,3 +5,8 @@ export interface IUserUsecase{
     updateUserProfile(id: string): IUser
 }
 
+export interface IJwtPayload{
+    id: string,
+    user_id: string
+}
+

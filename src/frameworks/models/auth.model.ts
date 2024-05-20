@@ -21,7 +21,10 @@ const AuthSchema = new mongoose.Schema({
     },
     token:[{
         type:String,
-    }]
+    }],
+    userid:{
+        type: mongoose.Types.ObjectId
+    }
    
 })
 

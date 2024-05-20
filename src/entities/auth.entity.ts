@@ -5,6 +5,7 @@ interface IAuth {
     password: string;
     token?: string[];
     verified: boolean;
+    userid: string
 }
   
   export default IAuth;

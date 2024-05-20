@@ -101,7 +101,8 @@ export class AuthRepository implements IAuthRepository {
         const newAuth = new AuthModel({
             email: data.email,
             username: data.username,
-            password: data.password
+            password: data.password,
+            userid:user._id
         })
         const saved = await user.save();
         const authsaved = await newAuth.save();

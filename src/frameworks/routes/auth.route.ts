@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import { AuthController } from "../../controllers/auth.controller";
 import { AuthUsecase } from "../../usecase/auth.usecase";
 import { AuthRepository } from "../../repository/auth.repository";
+import { authMiddleware } from "../middlewares/auth.middleware";
 
 const router = express.Router();
 const authRepository = new AuthRepository();
@@ -34,6 +35,10 @@ router.post('/forgot-password',(req: Request, res: Response, next: NextFunction)
 
 router.post('/verify-password',(req: Request, res: Response, next: NextFunction)=>{
     authController.verifyresetPassword(req,res,next)
+})
+
+router.get('/check-auth',authMiddleware,(req: Request, res: Response,next: NextFunction)=>{
+    authController.checkAuthenticated(req,res,next)
 })
 
 // router.post('/forgot-password', authController.forgotPassword);

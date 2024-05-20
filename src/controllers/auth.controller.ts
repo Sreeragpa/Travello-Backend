@@ -38,8 +38,15 @@ export class AuthController{
                 throw new Error("Missing Data (email or password")
             }
             const token = await this.authUsecase.userSignin(body);
-            res.cookie('authToken', token, { httpOnly: true });
-            res.status(200).json({ status: 'success', data: null });
+            // res.cookie('authToken', token, { httpOnly: true });
+            res.cookie('authToken', token, {
+                httpOnly: true,
+                secure: true,  // Use true if you're serving over HTTPS
+                sameSite: 'none'  // Allows cross-site cookie usage
+              });
+            console.log('cookieset');
+            
+            res.status(200).json({ status: 'success', data: token });
 
         } catch (error) {
             next(error)
@@ -63,6 +70,16 @@ export class AuthController{
             const data = await this.authUsecase.verifyResetPassword(email,otp,newpassword);
             res.status(200).json({ status: 'success', data: data });
             
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async checkAuthenticated(req: Request, res: Response, next: NextFunction){
+        try {
+            console.log("authenticated");
+            
+            res.status(200).json({ status: 'authenticated' });
         } catch (error) {
             next(error)
         }

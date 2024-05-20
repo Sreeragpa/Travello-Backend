@@ -17,10 +17,10 @@ export class AuthUsecase implements IAuthUsecase {
     async verifyResetPassword(email: string, otp: string, newpassword: string) {
         try {
             const data = await this.verifyOtp(email, otp)
-            if(!data){
+            if (!data) {
                 throw new Error("OTP_VERIFICATION_ERROR")
             }
-            await this.authRepository.changePassword(email,newpassword)
+            await this.authRepository.changePassword(email, newpassword)
             return "Reset Password Successfull"
         } catch (error) {
             throw error
@@ -29,6 +29,7 @@ export class AuthUsecase implements IAuthUsecase {
     }
     async resetPassword(email: string) {
         try {
+            // Sending OTP 
             await this.sendOtpByEmail(email, "Travello:Reset Password")
             return "OTP Sent Successfully"
         } catch (error) {
@@ -60,36 +61,43 @@ export class AuthUsecase implements IAuthUsecase {
             await this.sendOtpByEmail(data.email, "Travello:Verify Account");
             throw new Error(ErrorCode.USER_NOT_VERIFIED)
         }
-        const payload = { id: user._id, email: user.email }
+        const payload = { id: user._id, email: user.email,user_id:user.userid }
         const token = signJWT(payload, 8)
+        console.log(token);
+        
         return await this.authRepository.login(data, token);
 
     }
 
     async userSignup(data: IUser) {
-        const emailExists = await this.authRepository.checkEmailExists(data.email);
+        try {
+            const emailExists = await this.authRepository.checkEmailExists(data.email);
 
-        const usernameExists = await this.authRepository.checkUsernameExists(
-            data.username
-        );
+            const usernameExists = await this.authRepository.checkUsernameExists(
+                data.username
+            );
 
-        if (emailExists) {
-            throw new Error(ErrorCode.EMAIL_ALREADY_EXISTS); // Throw for controller handling
+            if (emailExists) {
+                throw new Error(ErrorCode.EMAIL_ALREADY_EXISTS); // Throw for controller handling
+            }
+            if (usernameExists) {
+                throw new Error(ErrorCode.USERNAME_ALREADY_EXISTS); // Throw for controller handling
+            }
+
+            // Hash password
+            data.password = await bcrypt.hash(data.password as string, 10);
+
+            // Create user
+            data.username = data.username.toLowerCase()
+            const newUser = await this.authRepository.create(data);
+
+            // Generate OTP and Send  via email
+            await this.sendOtpByEmail(data.email, "Travello:Verify Account");
+
+            return newUser;
+        } catch (error) {
+            throw error
         }
-        if (usernameExists) {
-            throw new Error(ErrorCode.USERNAME_ALREADY_EXISTS); // Throw for controller handling
-        }
-
-        // Hash password
-        data.password = await bcrypt.hash(data.password as string, 10);
-
-        // Create user
-        const newUser = await this.authRepository.create(data);
-
-        // Generate OTP and Send  via email
-        await this.sendOtpByEmail(data.email, "Travello:Verify Account");
-
-        return newUser;
     }
 
     forgotPassword(email: string) {
@@ -97,7 +105,10 @@ export class AuthUsecase implements IAuthUsecase {
     }
     async verifyOtp(email: string, otp: string) {
         try {
+            // Verifying OTP from OtpCollection
             const OtpVerfication = await this.authRepository.verifyOtp(email, otp);
+
+            // Verifying User Account after OTP Verification
             await this.authRepository.verifyUserAccount(email)
             return OtpVerfication;
         } catch (error) {

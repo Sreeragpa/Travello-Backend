@@ -4,6 +4,7 @@ import cors from "cors"
 import helmet from "helmet";
 import errorHandler from "../middlewares/errorHandler";
 import authRouter from "../routes/auth.route"
+import postRouter from '../routes/post.route'
 import cookieParser from "cookie-parser";
 
 
@@ -20,7 +21,10 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false }));
 
 // Enable CORS 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:4200', // Allow requests from Angular application
+    credentials: true // Include credentials (cookies) in cross-origin requests
+  }));
 
 // Cookie-Parser
 app.use(cookieParser())
@@ -31,6 +35,8 @@ app.use(helmet());
 
 // Auth routes
 app.use('/api/auth', authRouter);  
+// post routes
+app.use('/api/posts', postRouter);  
 
 // Unknown Route
 app.all("*", (req: Request, res: Response, next: NextFunction) => {

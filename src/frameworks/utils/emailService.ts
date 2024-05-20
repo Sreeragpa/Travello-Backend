@@ -1,6 +1,5 @@
 import nodemailer from "nodemailer"
 
-// Configure Nodemailer transporter
 
 
 // Function to send email
@@ -9,8 +8,8 @@ async function sendEmail(to: string, subject: string, text: string) {
     const transporter = nodemailer.createTransport({
         service: 'Gmail',
         auth: {
-            user: process.env.EMAIL, // Your Gmail email address
-            pass: process.env.PASS // Your Gmail password
+            user: process.env.EMAIL, 
+            pass: process.env.PASS 
         }
     });
     console.log(to,subject,text);

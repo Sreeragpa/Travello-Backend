@@ -2,14 +2,14 @@ import { Request, Response, NextFunction } from 'express';
 import { verifyJWT } from '../utils/jwt.utils';
 
 
-interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest extends Request {
     user?: object;
 }
 
 export const authMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
         const authToken = req.cookies.authToken;
-
+        
         if (!authToken) {
             return res.sendStatus(401);
         }
