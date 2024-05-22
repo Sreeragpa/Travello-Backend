@@ -17,6 +17,12 @@ router.post('/add-post',authMiddleware,(req: Request,res: Response, next: NextFu
 router.get('/get-post',authMiddleware,(req: Request,res: Response, next: NextFunction)=>{
     postController.getPosts(req,res,next)
 })
+router.post('/like',authMiddleware,(req: Request, res: Response, next: NextFunction)=>{
+    postController.likePost(req,res,next)
+})
+router.post('/unlike',authMiddleware,(req: Request, res: Response, next: NextFunction)=>{
+    postController.unlikePost(req,res,next)
+})
 
 
 export default router

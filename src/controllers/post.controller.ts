@@ -22,6 +22,7 @@ export class PostController{
         
         // res.status(200).json({data:"hehehehehehh"})
         const data:IPost = {
+            _id:'',
             creator_id: user.user_id,
             caption: caption,
             images: images,
@@ -41,9 +42,31 @@ export class PostController{
 
     async getPosts(req: AuthenticatedRequest,res: Response, next: NextFunction){
         try {
-            const posts = await this.postUsecase.getPosts();
+            const user = req.user as IJwtPayload;
+            const posts = await this.postUsecase.getPosts(user.user_id);
             res.status(200).json({ status: 'success', data: posts });
 
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async likePost(req: AuthenticatedRequest,res: Response, next: NextFunction){
+        try {
+            const user = req.user as IJwtPayload;
+            const postid = req.body.postid;
+            const like = await this.postUsecase.likePost(user.user_id,postid);
+            res.status(200).json({status:"success",data:"Like Success"})
+        } catch (error) {
+            next(error)
+        }
+    }
+    async unlikePost(req: AuthenticatedRequest,res: Response, next: NextFunction){
+        try {
+            const user = req.user as IJwtPayload;
+            const postid = req.body.postid;
+            const like = await this.postUsecase.unlikePost(user.user_id,postid);
+            res.status(200).json({status:"success",data:"UnLike Success"})
         } catch (error) {
             next(error)
         }

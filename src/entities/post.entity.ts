@@ -1,5 +1,5 @@
 export default interface IPost{
-    id?: string,
+    _id: string,
     creator_id: string,
     trip_id?: string,
     caption: string,

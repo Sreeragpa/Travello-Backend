@@ -5,9 +5,8 @@ export default interface IUser {
     hostedTrips?: string[]; 
     posts?: string[]; 
     chats?: string[];
-    followers?: string[]; 
-    following?: string[]; 
+    // followers?: string[]; 
+    // following?: string[]; 
     notifications?: string[]; 
     password?: string;
-    
   }

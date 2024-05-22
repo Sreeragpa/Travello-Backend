@@ -11,10 +11,40 @@ export class PostUsecase implements IPostUsecase{
         this.postRepository = postRepository
         this.cloudinaryService = cloudinaryService
     }
-    async getPosts(): Promise<IPost[]> {
+    async likePost(userid: string, postid: string): Promise<any> {
+        try {
+            const result = await this.postRepository.likePost(userid,postid);
+            if(result){
+                return result
+            }else{
+                throw new Error("Error like not Submitted")
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+    async unlikePost(userid: string, postid: string): Promise<any> {
+        try {
+            const result = await this.postRepository.unlikePost(userid,postid);
+            if(result){
+                return result
+            }else{
+                throw new Error("Error unlike not Submitted")
+            }
+        } catch (error) {
+            throw error
+        }
+    }
+    async getPosts(userid: string): Promise<IPost[]> {
         try {
             const posts = await this.postRepository.findAll();
-            return posts
+
+            
+            const postsWithLikeInfo = await Promise.all(posts.map(async post =>{
+                const isLiked = await this.postRepository.isPostLikedByUser(userid,post._id);
+                return {...post,isLiked}
+            }))
+            return postsWithLikeInfo
         } catch (error) {
             throw error
         }
