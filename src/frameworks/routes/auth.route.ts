@@ -6,8 +6,8 @@ import { authMiddleware } from "../middlewares/auth.middleware";
 
 const router = express.Router();
 const authRepository = new AuthRepository();
-const authUsecase = new AuthUsecase(authRepository)
-const authController = new AuthController(authUsecase)
+const authUsecase = new AuthUsecase(authRepository);
+const authController = new AuthController(authUsecase);
 
 // main route /api/auth
 router.post('/signup',(req: Request, res: Response, next: NextFunction) => {
@@ -24,9 +24,10 @@ router.get('/test', (req: Request, res: Response, next: NextFunction)=>{
     res.status(200).json({message:"/api/auth Working like a pro"})
 });
 
-router.delete('/logout',(req: Request, res: Response, next: NextFunction)=>{
-    res.cookie('authToken', '', { expires: new Date(0) });
-    res.status(200).json({status:"Success",message:"logout"})
+router.post('/logout',(req: Request, res: Response, next: NextFunction)=>{
+    authController.logout(req,res,next)
+    // res.cookie('authToken', '', { expires: new Date(0) });
+    // res.status(200).json({status:"Success",message:"logout"})
 })
 
 router.post('/forgot-password',(req: Request, res: Response, next: NextFunction)=>{
@@ -41,6 +42,7 @@ router.get('/check-auth',authMiddleware,(req: Request, res: Response,next: NextF
     authController.checkAuthenticated(req,res,next)
 })
 
+// router.post('/logout',authMiddleware,authController.)
 // router.post('/forgot-password', authController.forgotPassword);
 // router.post('/refresh-token', authController.refreshToken);
 

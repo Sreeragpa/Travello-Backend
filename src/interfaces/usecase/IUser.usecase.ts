@@ -2,8 +2,15 @@ import IUser from "../../entities/user.entity";
 
 export interface IUserUsecase{
     getUserPofile(username: string): IUser
-    updateUserProfile(id: string): IUser
+    updateUserProfilePic(userid: string, img: string): Promise<IUser>
+    getUser(userid: string): Promise<IUser>
+    updateUserProfile(userid: string, name: string, username: string, bio: string): Promise<IUser>
+    updatePassword(userid: string, oldPassword: string,newPassword: string): Promise<IUser>
 }
+
+
+
+
 
 export interface IJwtPayload{
     id: string,

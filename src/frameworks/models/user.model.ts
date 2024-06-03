@@ -11,6 +11,10 @@ const UserSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    name:{
+        type: String,
+        required: true
+    },
     followers:[{
         type: mongoose.Schema.Types.ObjectId
     }],
@@ -28,7 +32,11 @@ const UserSchema = new mongoose.Schema({
     }],
     chats:[{
         type: mongoose.Schema.Types.ObjectId
-    }]
+    }],
+    profileimg:{
+        type: String,
+        default:""
+    }
 })
 
 export const UserModel = mongoose.model("Users",UserSchema);

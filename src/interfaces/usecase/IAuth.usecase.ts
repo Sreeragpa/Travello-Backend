@@ -9,10 +9,11 @@ export interface IAuthUsecase{
     sendOtpByEmail(email: string, subject: string): any
     resetPassword(email: string): any
     verifyResetPassword(email: string,otp: string, newpassword: string): any
+    logoutUser(): string
 }
 
 export interface IRegisterInput {
     username: string;
     email: string;
     password: string;
-  }
+  } 

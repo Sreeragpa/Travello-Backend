@@ -17,7 +17,9 @@ cloudinary.v2.config({
 export class CloudinaryService {
   async uploadImage(image: string): Promise<string> {
     try {
-      const result: UploadApiResponse = await cloudinary.v2.uploader.upload(image, {folder: 'travello', });
+      console.log("In cloudinar");
+      
+      const result: UploadApiResponse = await cloudinary.v2.uploader.upload(image, {folder: 'travello'});
       return result.secure_url;
     } catch (error) {
       console.error('Error uploading image to Cloudinary:', error);

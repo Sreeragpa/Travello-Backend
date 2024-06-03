@@ -43,7 +43,8 @@ export class PostController{
     async getPosts(req: AuthenticatedRequest,res: Response, next: NextFunction){
         try {
             const user = req.user as IJwtPayload;
-            const posts = await this.postUsecase.getPosts(user.user_id);
+            const id = req.params.id;
+            const posts = await this.postUsecase.getPosts(user.user_id,id);
             res.status(200).json({ status: 'success', data: posts });
 
         } catch (error) {
@@ -56,7 +57,7 @@ export class PostController{
             const user = req.user as IJwtPayload;
             const postid = req.body.postid;
             const like = await this.postUsecase.likePost(user.user_id,postid);
-            res.status(200).json({status:"success",data:"Like Success"})
+            res.status(200).json({status:"success",data:like})
         } catch (error) {
             next(error)
         }
@@ -66,7 +67,26 @@ export class PostController{
             const user = req.user as IJwtPayload;
             const postid = req.body.postid;
             const like = await this.postUsecase.unlikePost(user.user_id,postid);
-            res.status(200).json({status:"success",data:"UnLike Success"})
+            res.status(200).json({status:"success",data:like})
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async getUserPosts(req: AuthenticatedRequest, res: Response, next: NextFunction){
+        try {
+            const user = req.user as IJwtPayload;
+            const posts = await this.postUsecase.getUserPosts(user.user_id);
+            res.status(200).json({status:'success',data: posts})
+        }catch(error){
+            next(error)
+        }
+    }
+
+    async getSinglePost(req: AuthenticatedRequest, res: Response, next: NextFunction){
+        try {
+            const postid = req.params.id;
+
         } catch (error) {
             next(error)
         }

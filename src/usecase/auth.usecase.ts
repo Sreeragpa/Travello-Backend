@@ -14,6 +14,9 @@ export class AuthUsecase implements IAuthUsecase {
     constructor(authRepository: IAuthRepository) {
         this.authRepository = authRepository;
     }
+    logoutUser(): string { 
+        throw new Error("Method not implemented.");
+    }
     async verifyResetPassword(email: string, otp: string, newpassword: string) {
         try {
             const data = await this.verifyOtp(email, otp)
@@ -116,4 +119,6 @@ export class AuthUsecase implements IAuthUsecase {
             throw error;
         }
     }
+
+   
 }

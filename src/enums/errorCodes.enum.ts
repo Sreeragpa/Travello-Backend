@@ -13,6 +13,7 @@ export enum ErrorCode {
     VALIDATION_ERROR = 'VALIDATION_ERROR', // Request data validation failed
     MISSING_REQUIRED_FIELD = 'MISSING_REQUIRED_FIELD', // Required field is missing in request data
     INVALID_FIELD_VALUE = 'INVALID_FIELD_VALUE', // Field value is invalid or doesn't meet requirements
+    INCORRECT_PASSWORD = 'INCORRECT_PASSWORD', // Field with Incorrect Password 
 
     // Data access errors
     RESOURCE_NOT_FOUND = 'RESOURCE_NOT_FOUND', // Requested resource not found

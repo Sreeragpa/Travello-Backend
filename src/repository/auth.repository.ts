@@ -6,8 +6,21 @@ import { UserModel } from "../frameworks/models/user.model";
 import { OtpModel } from "../frameworks/models/otp.model";
 import { Document } from "mongoose";
 import { ErrorCode } from "../enums/errorCodes.enum";
+import bcrypt from 'bcrypt'
 
 export class AuthRepository implements IAuthRepository {
+    async findPassword(userid: string, password: string): Promise<string> {
+        try {
+            const user = await AuthModel.findOne({userid:userid});
+            return user?.password!
+        } catch (error) {         
+            throw error 
+        }
+        
+    }
+    logout(): Promise<string> {
+        throw new Error("Method not implemented.");
+    }
     async verifyUserAccount(email: string): Promise<IAuth | null> {
         try {
             const updatedUser = await AuthModel.findOneAndUpdate(
@@ -26,6 +39,7 @@ export class AuthRepository implements IAuthRepository {
     }
     async changePassword(email: string, password: string): Promise<string> {
         try {
+            password = await bcrypt.hash(password,10)
             await AuthModel.findOneAndUpdate({ email: email }, { $set: { password: password } })
             return "Password Changed Successfully"
         } catch (error) {
@@ -101,8 +115,10 @@ export class AuthRepository implements IAuthRepository {
         const newAuth = new AuthModel({
             email: data.email,
             username: data.username,
+            name: data.username,
             password: data.password,
-            userid:user._id
+            userid:user._id,
+            bio:"New to Travello! ✈️ Exploring the world"
         })
         const saved = await user.save();
         const authsaved = await newAuth.save();
@@ -113,8 +129,5 @@ export class AuthRepository implements IAuthRepository {
         await AuthModel.updateOne({ email: data.email }, { $push: { token: token } });
         return token
     }
-
-
-
 
 } 

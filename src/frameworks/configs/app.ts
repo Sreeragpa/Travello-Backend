@@ -1,15 +1,18 @@
-import express, { NextFunction, Request, Response, application } from "express"
+import express, { NextFunction, Request, Response, application, Express } from "express"
 import dotenv from "dotenv"
 import cors from "cors"
 import helmet from "helmet";
 import errorHandler from "../middlewares/errorHandler";
+import cookieParser from "cookie-parser";
+
 import authRouter from "../routes/auth.route"
 import postRouter from '../routes/post.route'
-import cookieParser from "cookie-parser";
+import followRouter from "../routes/follow.route"
+import userRouter from "../routes/user.route"
 
 
 // Initialize Express application
- const app = express();
+ const app: Express = express();
 
 // Load environment variables from .env file 
 dotenv.config();
@@ -23,6 +26,8 @@ app.use(express.urlencoded({ extended: false }));
 // Enable CORS 
 app.use(cors({
     origin: 'http://localhost:4200', // Allow requests from Angular application
+    // origin: 'http://10.4.4.139:4200', // Allow requests from Angular application
+
     credentials: true // Include credentials (cookies) in cross-origin requests
   }));
 
@@ -37,6 +42,10 @@ app.use(helmet());
 app.use('/api/auth', authRouter);  
 // post routes
 app.use('/api/posts', postRouter);  
+// follow routes
+app.use('/api/follow', followRouter);  
+//  User Routes
+app.use('/api/user', userRouter)
 
 // Unknown Route
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
