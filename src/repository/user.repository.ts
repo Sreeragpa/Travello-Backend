@@ -8,9 +8,11 @@ export interface IUserData extends Document{}
 
 export class UserRepository implements IUserRepository{
 
-    async updateUser(userid: string, name: string, username: string, bio: string): Promise<any> {
+    async updateUser(userid: string, updatefields: any): Promise<any> {
       try {
-        const user = await UserModel.findOneAndUpdate({_id:userid},{$set:{name:name,username:username,bio}},{new: true});
+        console.log(updatefields,"huhhhuh");
+        
+        const user = await UserModel.findOneAndUpdate({_id:userid},{$set:updatefields},{new: true});
         return user
       } catch (error) {
         throw error
@@ -20,6 +22,7 @@ export class UserRepository implements IUserRepository{
     async updatePassword(userid: string, password: string): Promise<string> {
       try {
         const user = await AuthModel.findOneAndUpdate({userid:userid},{$set:{password:password}},{new:true});
+    
         
         if(user){
           return "Password Changed Successfully"

@@ -15,14 +15,16 @@ export class UserUsecase implements IUserUsecase {
         this.cloudinaryService = cloudinaryService
         this.authRepository = authRepository
     }
-    async updateUserProfile(userid: string, name: string, username: string, bio: string): Promise<IUser> {
+    async updateUserProfile(userid:string, updatefields: any): Promise<IUser> {
         try {
-            username = username.toLowerCase();
-            const isUsernameExists = await this.authRepository.checkUsernameExists(username);
-            if (isUsernameExists) {
-                throw new Error(ErrorCode.USERNAME_ALREADY_EXISTS)
+            if(updatefields.username){
+                updatefields.username = updatefields.username.toLowerCase();
+                const isUsernameExists = await this.authRepository.checkUsernameExists(updatefields.username);
+                if (isUsernameExists) {
+                    throw new Error(ErrorCode.USERNAME_ALREADY_EXISTS)
+                }
             }
-            const user = await this.userRepository.updateUser(userid, name, username, bio);
+            const user = await this.userRepository.updateUser(userid,updatefields);
             return user
         } catch (error) {
             throw error

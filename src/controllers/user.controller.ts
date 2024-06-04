@@ -33,24 +33,29 @@ export class UserController {
             const {name,username,bio} = req.body;
             const user = req.user as IJwtPayload;
 
-            const errors = [];
-            if (!name.trim()) {
-              errors.push('Name is required.');
-            }
-            if (!username.trim()) {
-              errors.push('Username is required.');
-            }
-            if (!bio.trim()) {
-              errors.push('Bio is required.');
-            }
+    
           
-            // Check for validation errors
-            if (errors.length > 0) {
-              return res.status(400).json({ errors }); // Bad request
-            }
+            const updateFields: any = {};
+    
+            if (name && name.trim()) updateFields.name = name.trim();
+            if (username && username.trim()) updateFields.username = username.trim();
+            if (bio && bio.trim()) updateFields.bio = bio.trim();
+            console.log(updateFields);
 
-            const userdata = await this.userUsecase.updateUserProfile(user.user_id,name,username,bio);
-            return res.status(200).json({status:"success",data:userdata})
+
+            // Check for validation errors
+            if (Object.keys(updateFields).length > 0) {
+                // Assuming you have a method to update the user profile
+                console.log(updateFields);
+                
+                const userdata = await this.userUsecase.updateUserProfile(user.user_id,updateFields);
+                 return res.status(200).json({status:"success",data:userdata})
+        
+              } else {
+                return res.status(400).json({ status: 'failure', message: 'No valid fields to update' });
+              }
+
+           
             
         } catch (error) {
             next(error)
@@ -59,6 +64,7 @@ export class UserController {
 
     async updatePassword(req: AuthenticatedRequest, res: Response, next: NextFunction){
         try {
+          
 
             const user = req.user as IJwtPayload;
             const {currentPassword,newPassword} = req.body;

@@ -30,5 +30,9 @@ router.put('/update-password',authMiddleware,(req: Request,res: Response,next: N
     userController.updatePassword(req,res,next)
 })
 
+router.put('/update-profile',authMiddleware,(req: Request,res: Response,next: NextFunction)=>{
+    userController.updateProfile(req,res,next)
+})
+
 
 export default router
