@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { ISave } from "../../entities/post.entity";
 
 const postLikeSchema = new mongoose.Schema({
     post_id:{
@@ -9,4 +10,4 @@ const postLikeSchema = new mongoose.Schema({
     }
 },{timestamps: true});
 
-export const PostLikeModel = mongoose.model('postLikes',postLikeSchema);
+export const PostLikeModel = mongoose.model<ISave>('postLikes',postLikeSchema);

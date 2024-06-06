@@ -9,6 +9,7 @@ import authRouter from "../routes/auth.route"
 import postRouter from '../routes/post.route'
 import followRouter from "../routes/follow.route"
 import userRouter from "../routes/user.route"
+import commentRouter from "../routes/comment.route"
 
 
 // Initialize Express application
@@ -45,7 +46,9 @@ app.use('/api/posts', postRouter);
 // follow routes
 app.use('/api/follow', followRouter);  
 //  User Routes
-app.use('/api/user', userRouter)
+app.use('/api/user', userRouter);
+// Comment Rooutes
+app.use('/api/comment', commentRouter);
 
 // Unknown Route
 app.all("*", (req: Request, res: Response, next: NextFunction) => {

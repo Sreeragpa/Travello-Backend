@@ -38,7 +38,8 @@ const UserSchema = new mongoose.Schema({
         default:""
     },
     bio:{
-        type: String
+        type: String,
+        default:"New to Travello"
     }
 })
 

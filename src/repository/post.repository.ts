@@ -1,13 +1,56 @@
 import mongoose from "mongoose";
-import IPost from "../entities/post.entity";
+import IPost, { ISave } from "../entities/post.entity";
 import { PostModel } from "../frameworks/models/post.model";
 import { PostLikeModel } from "../frameworks/models/postLikes.models";
 import { IPostRepository } from "../interfaces/repositories/IPost.repository";
+import { SaveModel } from "../frameworks/models/saves.model";
+import { Model } from "mongoose";
 
 export class PostRepository implements IPostRepository {
+  async findSavedPost(userid: string): Promise<ISave[] | null> {
+    try {
+      const savedPosts = await SaveModel.find({ user_id: userid }).populate('post_id');
+      console.log(savedPosts);
+      
+      return savedPosts
+    } catch (error) {
+      throw error
+    }
+
+  }
+  async findSave(userid: string, postid: string): Promise<ISave | null> {
+    try {
+      const saved =  await SaveModel.findOne({ user_id: userid, post_id: postid })
+      console.log(saved);
+      
+      return saved
+    } catch (error) {
+      throw error
+    }
+  }
+  async savePost(userid: string, postid: string): Promise<ISave> {
+    try {
+      const newSave = new SaveModel({
+        user_id: userid,
+        post_id: postid
+      })
+      const saved = await newSave.save();
+      return saved
+    } catch (error) {
+      throw error
+    }
+  }
+  async unSavePost(userid: string, postid: string): Promise<ISave | null> {
+    try {
+      const unsavedPost = await SaveModel.findOneAndDelete({ user_id: userid, post_id: postid })
+      return unsavedPost
+    } catch (error) {
+      throw error
+    }
+  }
   async findPostByUser(userid: string): Promise<IPost[]> {
     try {
-      const posts = await PostModel.find({creator_id:userid});
+      const posts = await PostModel.find({ creator_id: userid }).sort({createdAt:-1});
       return posts
     } catch (error) {
       throw error
@@ -16,20 +59,20 @@ export class PostRepository implements IPostRepository {
 
   async isPostLikedByUser(userid: string, postid: string): Promise<Boolean> {
 
-    const liked = await PostLikeModel.findOne({ post_id: postid, user_id: userid});
-    
+    const liked = await PostLikeModel.findOne({ post_id: postid, user_id: userid });
+
     return !!liked
   }
   async likePost(userid: string, postid: string): Promise<any> {
     try {
-        const like = new PostLikeModel({
-          post_id: postid, user_id: userid
-        })
-        await like.save()
-  
-        await PostModel.updateOne({_id:postid},{$inc:{likes:1}})
-        return like
-      
+      const like = new PostLikeModel({
+        post_id: postid, user_id: userid
+      })
+      await like.save()
+
+      await PostModel.updateOne({ _id: postid }, { $inc: { likes: 1 } })
+      return like
+
     } catch (error) {
       throw error
     }
@@ -37,13 +80,13 @@ export class PostRepository implements IPostRepository {
   async unlikePost(userid: string, postid: string): Promise<any> {
     try {
 
-        const dislike = await PostLikeModel.findOneAndDelete({
-          post_id: postid, user_id: userid
-        })
-        await PostModel.updateOne({_id:postid},{$inc:{likes:-1}})
-  
-        return dislike
-      
+      const dislike = await PostLikeModel.findOneAndDelete({
+        post_id: postid, user_id: userid
+      })
+      await PostModel.updateOne({ _id: postid }, { $inc: { likes: -1 } })
+
+      return dislike
+
 
     } catch (error) {
       throw error
@@ -99,7 +142,7 @@ export class PostRepository implements IPostRepository {
           place: 1,
           'user.username': 1,
           'user._id': 1,
-          likes:1
+          likes: 1
         }
       },
       {
@@ -109,19 +152,17 @@ export class PostRepository implements IPostRepository {
       }
     ]);
 
-    console.log(posts);
-
 
     return posts
   }
 
   async findOne(postid: string): Promise<IPost[]> {
-    console.log(postid);
-    
+  
+
     const posts = await PostModel.aggregate([
       {
-        $match:{
-          _id:new mongoose.Types.ObjectId(postid)
+        $match: {
+          _id: new mongoose.Types.ObjectId(postid)
         }
       },
       {
@@ -148,7 +189,7 @@ export class PostRepository implements IPostRepository {
           place: 1,
           'user.username': 1,
           'user._id': 1,
-          likes:1
+          likes: 1
         }
       },
       {
@@ -158,7 +199,7 @@ export class PostRepository implements IPostRepository {
       }
     ]);
 
-    console.log(posts);
+   
 
 
     return posts

@@ -1,4 +1,4 @@
-import IPost from "../entities/post.entity";
+import IPost, { ISave } from "../entities/post.entity";
 import { CloudinaryService } from "../frameworks/utils/cloudinaryService";
 import { IPostRepository } from "../interfaces/repositories/IPost.repository";
 import { IPostUsecase } from "../interfaces/usecase/IPost.usercase";
@@ -14,6 +14,36 @@ export class PostUsecase implements IPostUsecase{
         this.cloudinaryService = cloudinaryService
         this.followRepository = followRepository
     }
+    async getSavedPosts(userid: string): Promise<IPost[] | null> {
+        const savedPosts = await this.postRepository.findSavedPost(userid)
+        
+        const postDetails = savedPosts?.map(item => item.post_id as IPost) || null;
+
+        console.log(postDetails);
+       
+        return postDetails
+    }
+    async unsavePost(userid: string, postid: string): Promise<ISave | null> {
+        try {
+            const unsavedPost = await this.postRepository.unSavePost(userid,postid)
+            return unsavedPost
+        } catch (error) {
+            throw error
+        }
+    }
+    async savePost(userid: string, postid: string): Promise<ISave | null> {
+        try {
+            const existingSave = await this.postRepository.findSave(userid,postid);
+            if(existingSave){
+                return existingSave
+            }
+            const data = await this.postRepository.savePost(userid,postid);
+            return data
+        } catch (error) {
+            throw error
+        }
+  
+    }
     async getUserPosts(userid: string): Promise<IPost[]> {
         try {
             const userPosts = await this.postRepository.findPostByUser(userid);
@@ -21,7 +51,7 @@ export class PostUsecase implements IPostUsecase{
         } catch (error) {
             throw error
         }
-        throw new Error("Method not implemented.");
+        
     }
     async likePost(userid: string, postid: string): Promise<any> {
         try {
@@ -69,7 +99,22 @@ export class PostUsecase implements IPostUsecase{
                 const isFollowing = await this.followRepository.isUserFollowing(userid,post.creator_id)
                 return {...post,isFollowing}
             }))
-            return postsWithFollowInfo
+
+            const postsWithSaveInfo = await Promise.all(postsWithFollowInfo.map(async post=>{
+                const isSaved = (await this.postRepository.findSave(userid,post._id))?true:false
+                return {...post,isSaved}
+                
+            }))
+
+            postsWithSaveInfo.map((post)=>{
+
+               if(post.user?._id.toString()===userid){
+                    post.same_user = true
+               } return post
+            })
+            // console.log("postsWithFollowInfo",postsWithSaveInfo);
+            
+            return postsWithSaveInfo
         } catch (error) {
             throw error
         }

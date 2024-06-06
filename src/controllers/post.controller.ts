@@ -91,4 +91,38 @@ export class PostController{
             next(error)
         }
     }
+
+    async addToSaved(req:AuthenticatedRequest,res:Response,next: NextFunction){
+        try {
+            const user = req.user as IJwtPayload;
+            const postid = req.body.postid;
+            const savedPost = await this.postUsecase.savePost(user.user_id,postid);
+            res.status(200).json({status:"success",data:savedPost})
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async removeSaved(req: AuthenticatedRequest, res: Response, next: NextFunction){
+        try {
+            const user = req.user as IJwtPayload;
+            const postid = req.params.postid;
+            const unsavedPost = await this.postUsecase.unsavePost(user.user_id,postid);
+            res.status(200).json({status:"success",data:unsavedPost})
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async getSavedPosts(req: AuthenticatedRequest, res: Response, next: NextFunction){
+        try {
+            const user = req.user as IJwtPayload;
+            const savedPosts = await this.postUsecase.getSavedPosts(user.user_id)
+            res.status(200).json({status:"success",data:savedPosts})
+
+        } catch (error) {
+            next(error)
+        }
+    }
 }

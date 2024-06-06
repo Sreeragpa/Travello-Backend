@@ -110,12 +110,12 @@ export class AuthRepository implements IAuthRepository {
     async create(data: IUser): Promise<IUser> {
         const user = new UserModel({
             email: data.email,
-            username: data.username
+            username: data.username,
+            name: data.username
         })
         const newAuth = new AuthModel({
             email: data.email,
             username: data.username,
-            name: data.username,
             password: data.password,
             userid:user._id,
             bio:"New to Travello! ✈️ Exploring the world"

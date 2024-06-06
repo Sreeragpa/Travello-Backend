@@ -2,7 +2,7 @@ import express, { NextFunction, Request, Response }  from "express";
 import { PostRepository } from "../../repository/post.repository";
 import { PostUsecase } from "../../usecase/post.usecase";
 import { PostController } from "../../controllers/post.controller";
-import { authMiddleware } from "../middlewares/auth.middleware";
+import { AuthenticatedRequest, authMiddleware } from "../middlewares/auth.middleware";
 import { CloudinaryService } from "../utils/cloudinaryService";
 import { FollowRepository } from "../../repository/follow.repository";
 
@@ -30,6 +30,16 @@ router.post('/like',authMiddleware,(req: Request, res: Response, next: NextFunct
 })
 router.delete('/unlike',authMiddleware,(req: Request, res: Response, next: NextFunction)=>{
     postController.unlikePost(req,res,next)
+})
+router.put('/save-post',authMiddleware,(req: Request, res: Response, next: NextFunction)=>{
+    postController.addToSaved(req,res,next)
+})
+router.delete('/unsave-post/:postid',authMiddleware,(req: Request, res: Response, next: NextFunction)=>{
+    postController.removeSaved(req,res,next)
+})
+
+router.get('/saved-post',authMiddleware,(req: Request, res: Response, next: NextFunction)=>{
+    postController.getSavedPosts(req,res,next)
 })
 
 

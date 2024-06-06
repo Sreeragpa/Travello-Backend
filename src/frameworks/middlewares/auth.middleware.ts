@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyJWT } from '../utils/jwt.utils';
+import { IJwtPayload } from '../../interfaces/usecase/IUser.usecase';
+
 
 
 export interface AuthenticatedRequest extends Request {
-    user?: object;
+    user?: IJwtPayload;
 }
 
 export const authMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -16,7 +18,7 @@ export const authMiddleware = (req: AuthenticatedRequest, res: Response, next: N
     
         // const token = authHeader.split(' ')[1];
 
-        const userData = verifyJWT(authToken);
+        const userData = verifyJWT(authToken) as IJwtPayload;
 
         if (!userData) {
             return res.status(401).json({ message: 'Unauthorized' });
