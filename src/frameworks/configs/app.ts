@@ -10,6 +10,7 @@ import postRouter from '../routes/post.route'
 import followRouter from "../routes/follow.route"
 import userRouter from "../routes/user.route"
 import commentRouter from "../routes/comment.route"
+import tripRouter from "../routes/trip.route"
 
 
 // Initialize Express application
@@ -23,7 +24,11 @@ app.use(express.json({ limit: '50mb' }));
 
 // Parse incoming URL-encoded form data
 app.use(express.urlencoded({ extended: false }));
-
+const allowedOrigins = [
+  'http://localhost:4200', // Allow requests from Angular application on localhost
+  'http://10.4.4.139:4200', // Allow requests from Angular application on specific IP
+  'http://10.4.5.201:4200'
+];
 // Enable CORS 
 app.use(cors({
     origin: 'http://localhost:4200', // Allow requests from Angular application
@@ -49,6 +54,8 @@ app.use('/api/follow', followRouter);
 app.use('/api/user', userRouter);
 // Comment Rooutes
 app.use('/api/comment', commentRouter);
+// Trip Rooutes
+app.use('/api/trip', tripRouter);
 
 // Unknown Route
 app.all("*", (req: Request, res: Response, next: NextFunction) => {

@@ -5,13 +5,14 @@ import { PostLikeModel } from "../frameworks/models/postLikes.models";
 import { IPostRepository } from "../interfaces/repositories/IPost.repository";
 import { SaveModel } from "../frameworks/models/saves.model";
 import { Model } from "mongoose";
+import { ILikedUser } from "../interfaces/repositories/IUser.repository";
 
 export class PostRepository implements IPostRepository {
   async findSavedPost(userid: string): Promise<ISave[] | null> {
     try {
       const savedPosts = await SaveModel.find({ user_id: userid }).populate('post_id');
       console.log(savedPosts);
-      
+
       return savedPosts
     } catch (error) {
       throw error
@@ -20,9 +21,9 @@ export class PostRepository implements IPostRepository {
   }
   async findSave(userid: string, postid: string): Promise<ISave | null> {
     try {
-      const saved =  await SaveModel.findOne({ user_id: userid, post_id: postid })
+      const saved = await SaveModel.findOne({ user_id: userid, post_id: postid })
       console.log(saved);
-      
+
       return saved
     } catch (error) {
       throw error
@@ -50,7 +51,7 @@ export class PostRepository implements IPostRepository {
   }
   async findPostByUser(userid: string): Promise<IPost[]> {
     try {
-      const posts = await PostModel.find({ creator_id: userid }).sort({createdAt:-1});
+      const posts = await PostModel.find({ creator_id: userid }).sort({ createdAt: -1 });
       return posts
     } catch (error) {
       throw error
@@ -157,7 +158,7 @@ export class PostRepository implements IPostRepository {
   }
 
   async findOne(postid: string): Promise<IPost[]> {
-  
+
 
     const posts = await PostModel.aggregate([
       {
@@ -199,10 +200,97 @@ export class PostRepository implements IPostRepository {
       }
     ]);
 
-   
+
 
 
     return posts
+  }
+
+  async getlikedUsers(userid: string,postid: string): Promise<ILikedUser[]> {
+    // await PostLikeModel.find({ post_id: postid }).populate("user_id");
+    let likedUsers = await PostLikeModel.aggregate([
+      {
+        $match: { post_id: new mongoose.Types.ObjectId(postid) }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "likedUser"
+        }
+      },
+      {
+        $unwind: "$likedUser"
+      },
+      {
+        $lookup: {
+          from: "follows",
+          let: { likedUserId: "$likedUser._id", currentUserId: new mongoose.Types.ObjectId(userid) },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$following_id", { $toString: "$$likedUserId" }] },
+                    { $eq: ["$follower_id", { $toString: "$$currentUserId" }] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "followingStatus"
+        }
+      },
+      {
+        $addFields: {
+          "likedUser.isFollowing": { $gt: [{ $size: "$followingStatus" }, 0] }
+        }
+      },
+      {
+        $lookup: {
+          from: "follows",
+          let: { likedUserId: "$likedUser._id", currentUserId: new mongoose.Types.ObjectId(userid) },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$follower_id", { $toString: "$$likedUserId" }] },
+                    { $eq: ["$following_id", { $toString: "$$currentUserId" }] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "followedStatus"
+        }
+      },
+      {
+        $addFields: {
+          "likedUser.isMutualFollow": {
+            $cond: {
+              if: { $and: [{ $gt: [{ $size: "$followedStatus" }, 0] }, "$likedUser.isFollowing"] },
+              then: true,
+              else: false
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          "likedUser._id": 1,
+          "likedUser.username": 1,
+          // "likedUser.isFollowing": 1,
+          "likedUser.isMutualFollow": 1
+        }
+      }
+    ]);
+
+    likedUsers = likedUsers.map(user => user.likedUser)
+    return likedUsers as ILikedUser[]
+
   }
 
 }

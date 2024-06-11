@@ -88,33 +88,26 @@ export class PostUsecase implements IPostUsecase{
             }else{
                 posts = await this.postRepository.findAll();
             }
-
             
-            const postsWithLikeInfo = await Promise.all(posts.map(async post =>{
-                const isLiked = await this.postRepository.isPostLikedByUser(userid,post._id);
-                return {...post,isLiked}
+            
+            const postsWithAllInfo = await Promise.all(posts.map(async post =>{
+                const [isLiked, isFollowing, isSaved, likedUsers] = await Promise.all([
+                    await this.postRepository.isPostLikedByUser(userid,post._id),
+                    await this.followRepository.isUserFollowing(userid,post.creator_id),
+                    (await this.postRepository.findSave(userid,post._id))?true:false,
+                    await this.postRepository.getlikedUsers(userid,post._id)
+                ])
+                return {...post,isLiked,isFollowing,isSaved,likedUsers}
             }))
 
-            const postsWithFollowInfo = await Promise.all(postsWithLikeInfo.map(async post =>{
-                const isFollowing = await this.followRepository.isUserFollowing(userid,post.creator_id)
-                return {...post,isFollowing}
-            }))
-
-            const postsWithSaveInfo = await Promise.all(postsWithFollowInfo.map(async post=>{
-                const isSaved = (await this.postRepository.findSave(userid,post._id))?true:false
-                return {...post,isSaved}
-                
-            }))
-
-            postsWithSaveInfo.map((post)=>{
-
-               if(post.user?._id.toString()===userid){
-                    post.same_user = true
-               } return post
-            })
+            postsWithAllInfo.forEach(post => {
+                if (post.user?._id.toString() === userid) {
+                    post.same_user = true;
+                }
+            });
             // console.log("postsWithFollowInfo",postsWithSaveInfo);
             
-            return postsWithSaveInfo
+            return postsWithAllInfo
         } catch (error) {
             throw error
         }

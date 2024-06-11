@@ -7,3 +7,9 @@ export interface IUserRepository{
     updateUser(userid: string,updatefields: any): Promise<IUser>
     updatePassword(userid: string, password: string): Promise<string>
 }   
+
+export interface ILikedUser{
+    _id:string,
+    username: string,
+    isMutualFollow: boolean,
+}

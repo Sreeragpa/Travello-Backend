@@ -14,8 +14,7 @@ export class CommentController {
             const postid = req.params.id;
             
             const comments = await this.commentUsecase.getAllComments(postid)
-            console.log(comments);
-            
+  
             return res.status(200).json({ status: "success", data: comments })
         } catch (error) {
             next(error)
@@ -28,7 +27,6 @@ export class CommentController {
             
             const user = req.user as IJwtPayload;
             if (content && content.trim()) content = content.trim().slice(0,100);
-            console.log(postid,content);
 
             if (!postid || !content) {
                 return res.status(400).json({ status: "fail", message: "Post ID and content are required" });
