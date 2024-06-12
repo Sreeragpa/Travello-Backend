@@ -11,6 +11,7 @@ import followRouter from "../routes/follow.route"
 import userRouter from "../routes/user.route"
 import commentRouter from "../routes/comment.route"
 import tripRouter from "../routes/trip.route"
+import notificationRouter from "../routes/notification.route"
 
 
 // Initialize Express application
@@ -54,8 +55,10 @@ app.use('/api/follow', followRouter);
 app.use('/api/user', userRouter);
 // Comment Rooutes
 app.use('/api/comment', commentRouter);
-// Trip Rooutes
+// Trip Routes
 app.use('/api/trip', tripRouter);
+// Notification Routes
+app.use('/api/notification', notificationRouter);
 
 // Unknown Route
 app.all("*", (req: Request, res: Response, next: NextFunction) => {

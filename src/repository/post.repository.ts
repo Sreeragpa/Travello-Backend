@@ -232,8 +232,8 @@ export class PostRepository implements IPostRepository {
               $match: {
                 $expr: {
                   $and: [
-                    { $eq: ["$following_id", { $toString: "$$likedUserId" }] },
-                    { $eq: ["$follower_id", { $toString: "$$currentUserId" }] }
+                    { $eq: ["$following_id", "$$likedUserId" ] },
+                    { $eq: ["$follower_id","$$currentUserId" ] }
                   ]
                 }
               }
@@ -256,8 +256,8 @@ export class PostRepository implements IPostRepository {
               $match: {
                 $expr: {
                   $and: [
-                    { $eq: ["$follower_id", { $toString: "$$likedUserId" }] },
-                    { $eq: ["$following_id", { $toString: "$$currentUserId" }] }
+                    { $eq: ["$follower_id", "$$likedUserId" ] },
+                    { $eq: ["$following_id", "$$currentUserId" ] }
                   ]
                 }
               }
@@ -289,6 +289,7 @@ export class PostRepository implements IPostRepository {
     ]);
 
     likedUsers = likedUsers.map(user => user.likedUser)
+
     return likedUsers as ILikedUser[]
 
   }

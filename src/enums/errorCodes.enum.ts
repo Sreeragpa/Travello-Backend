@@ -26,6 +26,8 @@ export enum ErrorCode {
     INSUFFICIENT_FUNDS = 'INSUFFICIENT_FUNDS', // User has insufficient funds to perform action
     ORDER_NOT_FOUND = 'ORDER_NOT_FOUND', // Order does not exist
     INVALID_OPERATION = 'INVALID_OPERATION', // Operation is not allowed or invalid
+    USER_ALREADY_JOINED = 'USER_ALREADY_JOINED',
+    TRIP_IS_FULL = 'TRIP_IS_FULL',
 
     // Custom application-specific errors
     CUSTOM_ERROR_1 = 'CUSTOM_ERROR_1', // Custom error 1

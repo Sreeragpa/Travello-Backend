@@ -18,7 +18,7 @@ export interface ITrip {
     };
     startDate: Date;
     endDate: Date;
-    members?: string[];
+    members: string[];
     memberlimit: number     
     description: string;
     imageUrl?: string;
@@ -26,5 +26,6 @@ export interface ITrip {
     isuserjoined?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
+    istripfull?: boolean
   }
   
