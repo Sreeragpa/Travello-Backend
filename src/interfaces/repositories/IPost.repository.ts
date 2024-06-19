@@ -1,4 +1,4 @@
-import IPost, { ISave } from "../../entities/post.entity";
+import IPost, { IPostLike, ISave } from "../../entities/post.entity";
 import { ILikedUser } from "./IUser.repository";
 
 
@@ -8,7 +8,7 @@ export interface IPostRepository {
     findById(id: string): Promise<IPost | null>;
     findAll(): Promise<IPost[]>;    
     findOne(postid: string): Promise<IPost[]>;
-    likePost(userid: string, postid: string): Promise<any>;
+    likePost(userid: string, postid: string): Promise<IPostLike>;
     unlikePost(userid: string, postid: string): Promise<any>;
     isPostLikedByUser(userid: string, postid: string): Promise<Boolean>;
     findPostByUser(userid: string): Promise<IPost[]>
@@ -17,4 +17,5 @@ export interface IPostRepository {
     findSavedPost(userid: string): Promise<ISave[] | null>
     findSave(userid: string, postid: string): Promise<ISave | null>
     getlikedUsers(userid: string,postid: string): Promise<ILikedUser[]>
+    count(userid: string): Promise<number>
 }

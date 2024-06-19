@@ -33,7 +33,6 @@ export class FollowRepository implements IFollowRepository {
     async getFollowing(userid: string): Promise<IFollow[]> {
         try {
             const following = await FollowModel.find({ follower_id: userid }).select('following_id');
-            console.log(following);
             
             return following
         } catch (error) {

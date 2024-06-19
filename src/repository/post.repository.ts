@@ -8,10 +8,19 @@ import { Model } from "mongoose";
 import { ILikedUser } from "../interfaces/repositories/IUser.repository";
 
 export class PostRepository implements IPostRepository {
+  async count(userid: string): Promise<number> {
+    try {
+      const postCount = await PostModel.countDocuments({creator_id:userid}) 
+      return postCount
+    } catch (error) {
+      throw error
+    }
+
+  }
   async findSavedPost(userid: string): Promise<ISave[] | null> {
     try {
       const savedPosts = await SaveModel.find({ user_id: userid }).populate('post_id');
-      console.log(savedPosts);
+
 
       return savedPosts
     } catch (error) {
@@ -22,7 +31,6 @@ export class PostRepository implements IPostRepository {
   async findSave(userid: string, postid: string): Promise<ISave | null> {
     try {
       const saved = await SaveModel.findOne({ user_id: userid, post_id: postid })
-      console.log(saved);
 
       return saved
     } catch (error) {

@@ -70,7 +70,6 @@ export class AuthRepository implements IAuthRepository {
             await newOTP.save();
             return otp
         } catch (error) {
-            console.log(error);
 
             throw new Error("Error Saving OTP");
         }
@@ -102,7 +101,7 @@ export class AuthRepository implements IAuthRepository {
     async checkEmailExists(email: string): Promise<Boolean> {
 
         const user = await AuthModel.findOne({ email: email });
-        console.log(user);
+
 
         return user !== null;
     }

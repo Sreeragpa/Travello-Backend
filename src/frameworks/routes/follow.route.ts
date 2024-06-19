@@ -3,11 +3,18 @@ import { authMiddleware } from "../middlewares/auth.middleware";
 import { FollowRepository } from "../../repository/follow.repository";
 import { FollowUsecase } from "../../usecase/follow.usecase";
 import { FollowController } from "../../controllers/follow.controller";
+import { NotificationRepository } from "../../repository/notification.repository";
+import { NotificationUsecase } from "../../usecase/notification.usecase"
+import { io } from "../../server";
+import { userSocketMap } from "../configs/socketioHandlers";
 
 const router = express.Router();
 const followRepository = new FollowRepository();
-const followUsecase = new FollowUsecase(followRepository);
-const followController = new FollowController(followUsecase)
+const notificationRepository = new NotificationRepository()
+const notificationUsecase = new NotificationUsecase(notificationRepository)
+const followUsecase = new FollowUsecase(followRepository,notificationUsecase);
+const followController = new FollowController(followUsecase);
+
 
 router.post('/follow',authMiddleware,(req:Request, res: Response, next: NextFunction)=>{
     followController.followAccount(req,res,next)

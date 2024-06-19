@@ -10,7 +10,6 @@ export class UserRepository implements IUserRepository{
 
     async updateUser(userid: string, updatefields: any): Promise<any> {
       try {
-        console.log(updatefields,"huhhhuh");
         
         const user = await UserModel.findOneAndUpdate({_id:userid},{$set:updatefields},{new: true});
         return user
@@ -38,7 +37,7 @@ export class UserRepository implements IUserRepository{
     async getUserById(userid: string): Promise<any> {
       try {
         const user = await UserModel.findById(userid)
-        console.log(user);
+
         
         return user 
       } catch (error) {

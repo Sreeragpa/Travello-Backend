@@ -11,5 +11,6 @@ export interface IPostUsecase{
     savePost(userid: string, postid:string): Promise<ISave | null>
     unsavePost(userid: string, postid:string): Promise<ISave | null>
     getSavedPosts(userid: string): Promise<IPost[] | null>
+    getUserPostCount(userid: string): Promise<number>
 }
 

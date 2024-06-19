@@ -19,6 +19,7 @@ export enum ErrorCode {
     RESOURCE_NOT_FOUND = 'RESOURCE_NOT_FOUND', // Requested resource not found
     DUPLICATE_RESOURCE = 'DUPLICATE_RESOURCE', // Attempt to create duplicate resource
     FAILED_SENDING_OTP = 'FAILED_SENDING_OTP',
+    FAILED_UPDATING = 'FAILED_UPDATING',
 
     // Business logic errors
     EMAIL_ALREADY_EXISTS = 'EMAIL_ALREADY_EXISTS',

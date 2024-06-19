@@ -125,4 +125,15 @@ export class PostController{
             next(error)
         }
     }
+
+    async getPostCount(req: AuthenticatedRequest, res: Response, next: NextFunction){
+        try {
+            const user = req.user as IJwtPayload;
+            const count = await this.postUsecase.getUserPostCount(user.user_id);
+            
+            res.status(200).json({status:"success",data:{count:count}})
+        } catch (error) {
+            next(error)
+        }
+    }
 }

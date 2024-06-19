@@ -95,4 +95,13 @@ export class AuthController{
         res.status(200).json({status:"success",data:"Logged out successfully"})
     }
 
+    async getToken(req: Request, res: Response, next: NextFunction){
+        const token = req.cookies.authToken; // Adjust this based on how your token is sent
+
+    if (!token) {
+      return res.status(401).json({ message: 'Token not found' });
+    }
+        res.status(200).json({status:"success",data:token})
+    }
+
 }

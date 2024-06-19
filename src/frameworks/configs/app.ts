@@ -28,13 +28,14 @@ app.use(express.urlencoded({ extended: false }));
 const allowedOrigins = [
   'http://localhost:4200', // Allow requests from Angular application on localhost
   'http://10.4.4.139:4200', // Allow requests from Angular application on specific IP
-  'http://10.4.5.201:4200'
+  'http://10.4.5.201:4200',
+  'http://192.168.18.167:4200'
 ];
 // Enable CORS 
 app.use(cors({
-    origin: 'http://localhost:4200', // Allow requests from Angular application
-    // origin: 'http://10.4.4.139:4200', // Allow requests from Angular application
-
+    // origin: 'http://localhost:4200', // Allow requests from Angular application
+    origin: allowedOrigins, // Allow requests from Angular application
+    optionsSuccessStatus: 200 ,
     credentials: true // Include credentials (cookies) in cross-origin requests
   }));
 

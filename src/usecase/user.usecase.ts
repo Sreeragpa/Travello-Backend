@@ -34,7 +34,6 @@ export class UserUsecase implements IUserUsecase {
         try {
             newPassword = await bcrypt.hash(newPassword,10)
             const password = await this.authRepository.findPassword(userid, oldPassword);
-            console.log(password,newPassword);
             
             const isPasswordValid = await bcrypt.compare(oldPassword,password);        
             
@@ -59,7 +58,6 @@ export class UserUsecase implements IUserUsecase {
     async updateUserProfilePic(userid: string, img: string): Promise<IUser> {
         try {
             const uploadedImage = await this.cloudinaryService.uploadImage(img);
-            console.log(uploadedImage);
 
             const user = await this.userRepository.addProfilePicture(userid, uploadedImage)
             return user

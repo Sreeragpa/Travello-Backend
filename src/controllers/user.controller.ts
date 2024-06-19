@@ -13,11 +13,11 @@ export class UserController {
         try {
             const user = req.user as IJwtPayload;
             const image = req.body.profileimg;
-            console.log(user,image);
+         
             
 
             const userdata = await this.userUsecase.updateUserProfilePic(user.user_id, image);
-            console.log(userdata);
+         
             
             if(userdata){
                 res.status(200).json({status:"success",data:userdata})
@@ -40,13 +40,13 @@ export class UserController {
             if (name && name.trim()) updateFields.name = name.trim();
             if (username && username.trim()) updateFields.username = username.trim();
             if (bio && bio.trim()) updateFields.bio = bio.trim();
-            console.log(updateFields);
+      
 
 
             // Check for validation errors
             if (Object.keys(updateFields).length > 0) {
                 // Assuming you have a method to update the user profile
-                console.log(updateFields);
+           
                 
                 const userdata = await this.userUsecase.updateUserProfile(user.user_id,updateFields);
                  return res.status(200).json({status:"success",data:userdata})

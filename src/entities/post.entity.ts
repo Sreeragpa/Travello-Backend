@@ -21,3 +21,11 @@ export interface ISave extends Document{
   user_id: string,
   post_id: string | IPost
 }
+
+export interface IPostLike {
+  post_id: string;
+  user_id: string;
+  _id: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

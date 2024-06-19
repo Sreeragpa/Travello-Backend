@@ -29,3 +29,10 @@ export interface ITrip {
     istripfull?: boolean
   }
   
+
+  export interface IEditTrip{
+    title?: string;
+    imageUrl?: string;
+    memberlimit?: number;
+    description?: string;
+  }

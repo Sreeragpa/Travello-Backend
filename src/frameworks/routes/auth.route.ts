@@ -42,6 +42,10 @@ router.get('/check-auth',authMiddleware,(req: Request, res: Response,next: NextF
     authController.checkAuthenticated(req,res,next)
 })
 
+router.get('/token',authMiddleware,(req: Request, res: Response,next: NextFunction)=>{
+    authController.getToken(req,res,next)
+})
+
 // router.post('/logout',authMiddleware,authController.)
 // router.post('/forgot-password', authController.forgotPassword);
 // router.post('/refresh-token', authController.refreshToken);

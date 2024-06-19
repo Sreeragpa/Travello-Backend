@@ -66,7 +66,6 @@ export class AuthUsecase implements IAuthUsecase {
         }
         const payload = { id: user._id, email: user.email,user_id:user.userid }
         const token = signJWT(payload, 8)
-        console.log(token);
         
         return await this.authRepository.login(data, token);
 

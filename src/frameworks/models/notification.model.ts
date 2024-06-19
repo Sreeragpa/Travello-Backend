@@ -10,7 +10,7 @@ const NotificationSchema = new mongoose.Schema({
     },
     type:{
         type:String,
-        enum:["JOINREQUEST","REQUEST"]
+        enum:["JOINREQUEST","REQUEST","POSTLIKE","FOLLOW"]
     },
     tripid:{
         type: mongoose.Types.ObjectId
