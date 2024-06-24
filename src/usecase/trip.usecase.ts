@@ -119,6 +119,8 @@ export class TripUsecase implements ITripUsecase {
 
   async getTripsbyFollowing(userid: string): Promise<ITrip[]> {
     const followedUsers = await this.followRepository.getFollowing(userid);
+    console.log(followedUsers,"followedusers");
+    
     const followedUserIds = followedUsers.map(
       (follow) => new mongoose.Types.ObjectId(follow.following_id)
     );

@@ -3,6 +3,7 @@ import { IFollowUsecase } from "../interfaces/usecase/IFollow.usecase";
 import { AuthenticatedRequest } from "../frameworks/middlewares/auth.middleware";
 import { IJwtPayload } from "../interfaces/usecase/IUser.usecase";
 import { Server as SocketIOServer } from "socket.io";
+import { IFollowingSearch } from "../entities/follow.entity";
 interface IUserSocketMap {
     [key: string]: string;
   }
@@ -54,6 +55,22 @@ export class FollowController{
             const result = await this.followUsecase.getFollowersCount(user.user_id);
 
             res.status(200).json({status:'success',data:result})
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async getFollowings(req: AuthenticatedRequest, res: Response, next: NextFunction){
+        try {
+            const user = req.user as IJwtPayload;
+            const searchvalue = req.query.search;
+            const data: IFollowingSearch = {
+                follower_id: user.user_id,
+                searchKeyword:searchvalue?String(searchvalue).trim():null
+            }
+            const users = await this.followUsecase.getFollowings(data);
+            res.status(200).json({status:"success",data:users})
+            
         } catch (error) {
             next(error)
         }

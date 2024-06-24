@@ -28,4 +28,8 @@ router.get('/count',authMiddleware,(req: Request, res: Response, next: NextFunct
     followController.getFollowCount(req,res,next)
 })
 
+router.get('/following',authMiddleware,(req: Request, res: Response, next: NextFunction)=>{
+    followController.getFollowings(req,res,next)
+})
+
 export default router
