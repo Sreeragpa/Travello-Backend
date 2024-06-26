@@ -93,8 +93,27 @@ export class UserController {
     async getUser(req: AuthenticatedRequest, res: Response, next: NextFunction){
         try {
             const user = req.user as IJwtPayload;
-            const userdata = await this.userUsecase.getUser(user.user_id);
+            const userId = req.params.id || user.user_id;
+            let currentUser = user.user_id
+            const userdata = await this.userUsecase.getUser(userId,currentUser);
+            console.log(userdata,"userdataatt");
+            
             res.status(200).json({status:"succeess",data:userdata})
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async searchUser(req: AuthenticatedRequest, res: Response, next: NextFunction){
+        try {
+            const user = req.user as IJwtPayload;
+            const search = req.query.search as string;
+            if(!search.trim()){
+                return res.status(400).json({ message:"Invalid Search" }); 
+            }
+            const searchResults = await this.userUsecase.searchUser(user.user_id,search);
+            res.status(200).json({status:"succeess",data:searchResults})
 
         } catch (error) {
             next(error)

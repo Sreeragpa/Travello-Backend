@@ -37,10 +37,13 @@ export default function setupSocketHandlers(io: Server) {
     const decoded = verifyJWT(token);
     socket.data.user = decoded as IJwtPayload;
 
-    const user = socket?.data?.user || "eyeui";
+    const user = socket?.data?.user ;
     console.log(user, "User from Socket");
 
     userSocketMap[user.user_id] = socket.id;
+    const userId = socket.data.user.id;
+    
+    socket.join(userId);
 
 
     // Handle socket events
@@ -81,6 +84,16 @@ export default function setupSocketHandlers(io: Server) {
         socket.emit("unfollowResponse", { success: false, error: error });
       }
     });
+
+    socket.on('test',async(data)=>{
+      console.log(data,"data from test socket");
+      
+    })
+    socket.on('joinConversation', (conversationId) => {
+      socket.join(conversationId);
+      console.log(`User ${socket.id} joined conversation ${conversationId}`);
+    });
+  
 
     socket.on("disconnect", () => {
       console.log("user disconnected");

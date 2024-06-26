@@ -24,6 +24,10 @@ export class TripUsecase implements ITripUsecase {
     this.followRepository = followRepository;
     this.notificationUsecase = notificationUsecase;
   }
+    async searchTrip(searchKey: string): Promise<ITrip[]> {
+      const trips = await this.tripRepository.searchTrip(searchKey);
+      return trips
+    }
   async editTrip(userid: string, tripid: string, updateFields: Partial<IEditTrip>): Promise<ITrip> {
     try {
       if(updateFields.imageUrl){

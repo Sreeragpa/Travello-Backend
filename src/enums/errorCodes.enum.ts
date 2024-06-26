@@ -29,6 +29,7 @@ export enum ErrorCode {
     INVALID_OPERATION = 'INVALID_OPERATION', // Operation is not allowed or invalid
     USER_ALREADY_JOINED = 'USER_ALREADY_JOINED',
     TRIP_IS_FULL = 'TRIP_IS_FULL',
+    CONVERSATION_DOESNOT_EXIST = 'CONVERSATION_DOESNOT_EXIST',
 
     // Custom application-specific errors
     CUSTOM_ERROR_1 = 'CUSTOM_ERROR_1', // Custom error 1

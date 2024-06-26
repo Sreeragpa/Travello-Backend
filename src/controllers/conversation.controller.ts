@@ -32,5 +32,19 @@ export class ConversationController {
         } catch (error) {
             next(error)
         }
+
+    }
+
+    async getSingleConversation(req: AuthenticatedRequest, res: Response, next: NextFunction){
+        try {
+            const user = req.user as IJwtPayload;
+            const conversationid = req.params.conversationid;
+            const conversation = await this.conversationUsecase.getConversationByid(user.user_id,conversationid)
+            conversation.currentUserId = user.user_id
+            res.status(200).json({status:"success",data:conversation})
+            
+        } catch (error) {
+            next(error)
+        }
     }
 }

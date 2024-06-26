@@ -24,7 +24,11 @@ router.get('/get-trip/:id', authMiddleware,(req, res, next) => tripController.ge
 router.post('/join-trip', authMiddleware,(req, res, next) => tripController.joinTrip(req, res, next));
 router.post('/accept-request', authMiddleware,(req, res, next) => tripController.acceptJoinRequest(req, res, next));
 router.get('/count', authMiddleware,(req, res, next) => tripController.getTripCount(req, res, next));
+router.get('/count/:profileid', authMiddleware,(req, res, next) => tripController.getTripCount(req, res, next));
 router.get('/user-trips', authMiddleware,(req, res, next) => tripController.getUserTrips(req, res, next));
+router.get('/user-trips/:profileid', authMiddleware,(req, res, next) => tripController.getUserTrips(req, res, next));
 router.put('/edit-trip/:id', authMiddleware,(req, res, next) => tripController.updateTrip(req, res, next));
+router.get('/search-trip', authMiddleware,(req, res, next) => tripController.searchTrip(req, res, next));
+
 
 export default router

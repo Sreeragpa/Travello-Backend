@@ -2,11 +2,53 @@ import mongoose from "mongoose";
 import IConversation from "../entities/conversation.entity";
 import { ConversationModel } from "../frameworks/models/conversation.model";
 import { IConversationRepository } from "../interfaces/repositories/IConversation.repositories";
+import IUser from "../entities/user.entity";
 
 export class ConversationRepository implements IConversationRepository {
+    async getUsersInConversation(conversationid: string): Promise<IConversation> {
+        const userDetails = await ConversationModel.aggregate([
+            {
+                $match:{_id: new mongoose.Types.ObjectId(conversationid)}
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'members',
+                    foreignField: '_id',
+                    as: 'memberDetails'
+                }
+            },
+            {
+                $project: {
+                    "memberDetails._id": 1,
+                    "memberDetails.name": 1,
+                    "memberDetails.profileimg": 1
+                  }
+            }
+        ])
+
+        return userDetails[0]
+    }
+    async findOneConversationwithUserDetails(conversationid: string): Promise<IConversation> {
+        const conversation = await ConversationModel.aggregate([
+            {
+                $match: { _id: new mongoose.Types.ObjectId(conversationid) }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'members',
+                    foreignField: '_id',
+                    as: 'memberDetails'
+                }
+            }
+        ])
+        
+        return conversation[0]
+    }
     async isUserInConversation(conversationid: string, userid: string): Promise<boolean> {
-        const user= new mongoose.Types.ObjectId(userid);
-        const conversation = await ConversationModel.findOne({_id:conversationid, members: { $in: [user] }});
+        const user = new mongoose.Types.ObjectId(userid);
+        const conversation = await ConversationModel.findOne({ _id: conversationid, members: { $in: [user] } });
         return !!conversation
     }
     createGroupConversation(members: string[]): Promise<IConversation> {
@@ -14,13 +56,13 @@ export class ConversationRepository implements IConversationRepository {
     }
     async createIndividualConversation(members: string[]): Promise<IConversation> {
         try {
-                 const objectIds = members.map(id => new mongoose.Types.ObjectId(id));
-                 const newConversation = new ConversationModel({
-                     members: objectIds
-                 });
+            const objectIds = members.map(id => new mongoose.Types.ObjectId(id));
+            const newConversation = new ConversationModel({
+                members: objectIds
+            });
 
-                 const savedConversation = await newConversation.save();
-                 return savedConversation;
+            const savedConversation = await newConversation.save();
+            return savedConversation;
 
         } catch (error) {
             throw error
@@ -43,7 +85,7 @@ export class ConversationRepository implements IConversationRepository {
                     }
                 }
             ]);
-            
+
             console.log(conversations);
 
             return conversations

@@ -62,7 +62,7 @@ export class FollowRepository implements IFollowRepository {
             throw error
         }
     }
-    async isUserFollowing(userid: string, followingid: string): Promise<Boolean> {
+    async isUserFollowing(userid: string, followingid: string): Promise<boolean> {
 
         const following = await FollowModel.findOne({
             follower_id: userid,

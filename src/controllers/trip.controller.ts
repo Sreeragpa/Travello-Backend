@@ -105,6 +105,7 @@ export class TripController {
         }
         // trips = await this.tripUsecase.getTripsNearby()
       }
+  
       return res.status(200).json({ status: "success", data: trips });
     } catch (error) {
       next(error);
@@ -160,7 +161,9 @@ export class TripController {
   async getTripCount(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       const user = req.user as IJwtPayload;
-      const count = await this.tripUsecase.getUserTripCount(user.user_id);
+      const userId = req.params.profileid || user.user_id;
+
+      const count = await this.tripUsecase.getUserTripCount(userId);
 
       res.status(200).json({ status: "success", data: { count: count } })
     } catch (error) {
@@ -171,7 +174,9 @@ export class TripController {
   async getUserTrips(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       const user = req.user as IJwtPayload;
-      const userTrips = await this.tripUsecase.getUserTrips(user.user_id)
+      const userId = req.params.profileid || user.user_id;
+
+      const userTrips = await this.tripUsecase.getUserTrips(userId)
 
 
       res.status(200).json({ status: "success", data: userTrips })
@@ -199,5 +204,17 @@ export class TripController {
     } catch (error) {
       next(error)
     }
+  }
+
+  async searchTrip(req: AuthenticatedRequest, res: Response, next: NextFunction){
+    try {
+      const user = req.user as IJwtPayload;
+      const search =req.query.search as string;
+      const trips = await this.tripUsecase.searchTrip(search);
+      res.status(200).json({status:"success",data:trips})
+    } catch (error) {
+      next(error)
+    }
+
   }
 }

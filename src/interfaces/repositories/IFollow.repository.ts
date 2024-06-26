@@ -6,7 +6,7 @@ export interface IFollowRepository{
     deleteFollow(followerid: string, followingid: string): Promise<IFollow>
     getFollower(userid: string): Promise<IFollow[]>
     getFollowing(userid: string): Promise<IFollow[]>
-    isUserFollowing(userid: string, followingid: string): Promise<Boolean>
+    isUserFollowing(userid: string, followingid: string): Promise<boolean>
     getFollowcount(userid: string): Promise<any>
     getFollowingUsers(searchData: IFollowingSearch): Promise<IUser[]>
     

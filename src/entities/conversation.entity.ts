@@ -5,9 +5,11 @@ export default interface IConversation{
     members?:string[],
     createdAt?: Date,
     updatedAt?: Date,
-    memberDetails?: IUser,
+    memberDetails?: IUser[],
     isGroup: boolean;
     groupName?: string;
+    currentUserId?: string
+    lastMessage?: string
 }
 
 export interface IMessage{

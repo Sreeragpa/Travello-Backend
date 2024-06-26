@@ -13,6 +13,7 @@ export interface ITripRepository{
     findTripById(userid: string,tripid: string): Promise<ITrip[]>
     findNearbyTrips(userid: string,userLocation: IUserLocation, maxDistance: number): Promise<ITrip[]>
     findOneandUpdate(userid: string,tripid: string,updateFields:Partial<IEditTrip>): Promise<ITrip | null>
+    searchTrip(searchKey: string): Promise<ITrip[]>
 
 
 }

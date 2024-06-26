@@ -52,7 +52,8 @@ export class FollowController{
     async getFollowCount(req: AuthenticatedRequest, res: Response, next: NextFunction){
         try {
             const user = req.user as IJwtPayload;
-            const result = await this.followUsecase.getFollowersCount(user.user_id);
+            const userId = req.params.id || user.user_id;
+            const result = await this.followUsecase.getFollowersCount(userId);
 
             res.status(200).json({status:'success',data:result})
         } catch (error) {

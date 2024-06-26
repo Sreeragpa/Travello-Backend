@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import IUser from "../../entities/user.entity";
 
 const UserSchema = new mongoose.Schema({
     email:{
@@ -43,4 +44,4 @@ const UserSchema = new mongoose.Schema({
     }
 })
 
-export const UserModel = mongoose.model("Users",UserSchema);
+export const UserModel = mongoose.model<IUser>("Users",UserSchema);

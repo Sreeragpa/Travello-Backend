@@ -34,6 +34,9 @@ router.get('/get-post/:id',authMiddleware,(req: Request,res: Response, next: Nex
 router.get('/get-userpost',authMiddleware,(req: Request,res: Response, next: NextFunction)=>{
     postController.getUserPosts(req,res,next)
 })
+router.get('/get-userpost/:id',authMiddleware,(req: Request,res: Response, next: NextFunction)=>{
+    postController.getUserPosts(req,res,next)
+})
 router.post('/like',authMiddleware,(req: Request, res: Response, next: NextFunction)=>{
     postController.likePost(req,res,next)
 })
@@ -51,6 +54,9 @@ router.get('/saved-post',authMiddleware,(req: Request, res: Response, next: Next
     postController.getSavedPosts(req,res,next)
 })
 router.get('/count',authMiddleware,(req: Request, res: Response, next: NextFunction)=>{
+    postController.getPostCount(req,res,next)
+})
+router.get('/count/:profileid',authMiddleware,(req: Request, res: Response, next: NextFunction)=>{
     postController.getPostCount(req,res,next)
 })
 

@@ -12,4 +12,5 @@ export interface ITripUsecase{
     getSingleTrip(userid: string,tripid: string): Promise<ITrip[]>
     getTripsNearby(userid: string,userLocation: IUserLocation, maxDistance: number): Promise<ITrip[]>
     editTrip(userid:string,tripid: string,updateFields:Partial<IEditTrip>): Promise<ITrip>
+    searchTrip(searchKey: string): Promise<ITrip[]>
 }

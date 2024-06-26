@@ -27,6 +27,9 @@ router.delete('/unfollow',authMiddleware,(req:Request, res: Response, next: Next
 router.get('/count',authMiddleware,(req: Request, res: Response, next: NextFunction)=>{
     followController.getFollowCount(req,res,next)
 })
+router.get('/count/:id',authMiddleware,(req: Request, res: Response, next: NextFunction)=>{
+    followController.getFollowCount(req,res,next)
+})
 
 router.get('/following',authMiddleware,(req: Request, res: Response, next: NextFunction)=>{
     followController.getFollowings(req,res,next)

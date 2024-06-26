@@ -76,7 +76,8 @@ export class PostController{
     async getUserPosts(req: AuthenticatedRequest, res: Response, next: NextFunction){
         try {
             const user = req.user as IJwtPayload;
-            const posts = await this.postUsecase.getUserPosts(user.user_id);
+            const userId = req.params.id || user.user_id;
+            const posts = await this.postUsecase.getUserPosts(userId);
             res.status(200).json({status:'success',data: posts})
         }catch(error){
             next(error)
@@ -129,7 +130,8 @@ export class PostController{
     async getPostCount(req: AuthenticatedRequest, res: Response, next: NextFunction){
         try {
             const user = req.user as IJwtPayload;
-            const count = await this.postUsecase.getUserPostCount(user.user_id);
+            const userId = req.params.profileid || user.user_id;
+            const count = await this.postUsecase.getUserPostCount(userId);
             
             res.status(200).json({status:"success",data:{count:count}})
         } catch (error) {

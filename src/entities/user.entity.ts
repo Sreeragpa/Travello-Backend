@@ -1,4 +1,6 @@
-export default interface IUser {
+import { Document } from "mongoose";
+
+export default interface IUser extends Document{
     _id: string
     username: string;
     name: string
@@ -11,5 +13,6 @@ export default interface IUser {
     notifications?: string[]; 
     password?: string;
     profileimg?: string;
-    bio: string
+    bio: string;
+    isFollowing:boolean
   }

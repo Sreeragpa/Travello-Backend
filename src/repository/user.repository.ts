@@ -7,6 +7,14 @@ import { ErrorCode } from "../enums/errorCodes.enum";
 export interface IUserData extends Document{}
 
 export class UserRepository implements IUserRepository{
+    async searchUser(searchKey: string): Promise<IUser[]> {
+      const regex = new RegExp(searchKey, 'i');
+      const users = await UserModel.find({$or:[
+        {username:{$regex:regex}},
+        {name:{$regex:regex}}
+      ]})
+      return users
+    }
 
     async updateUser(userid: string, updatefields: any): Promise<any> {
       try {
@@ -34,7 +42,7 @@ export class UserRepository implements IUserRepository{
       }
     
     }
-    async getUserById(userid: string): Promise<any> {
+    async getUserById(userid: string): Promise<IUser | null> {
       try {
         const user = await UserModel.findById(userid)
 

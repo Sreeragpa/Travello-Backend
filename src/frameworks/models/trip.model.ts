@@ -70,6 +70,10 @@ const tripSchema = new mongoose.Schema({
   // Indexes
   tripSchema.index({ "startingPoint.coordinates": "2dsphere" });
   tripSchema.index({ "destination.coordinates": "2dsphere" });
+  tripSchema.index({ title: "text" });
+  tripSchema.index({ description: "text" });
+  tripSchema.index({ "startingPoint.name": "text" });
+  tripSchema.index({ "destination.name": "text" });
   
 
   export const TripModel = mongoose.model<ITrip>("trips",tripSchema)

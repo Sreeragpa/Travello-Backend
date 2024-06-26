@@ -4,6 +4,18 @@ import { TripModel } from "../frameworks/models/trip.model";
 import { ITripRepository, IUserLocation } from "../interfaces/repositories/ITrip.repository";
 
 export class TripRepository implements ITripRepository {
+  async searchTrip(searchKey: string): Promise<ITrip[]> {
+    const searchRegex = new RegExp(searchKey, 'i');
+    // const trips = await TripModel.find({ $text: { $search: searchKey } });
+    const trips = await TripModel.find({
+      $or: [
+        { title: { $regex: searchRegex } },
+        { "destination.name": { $regex: searchRegex } },
+        { "startingPoint.name": { $regex: searchRegex } }
+      ]
+    })
+    return trips
+  }
   async findOneandUpdate(userid: string, tripid: string,updateFields: Partial<IEditTrip>): Promise<ITrip | null> {
     const updatedTrip = await TripModel.findOneAndUpdate({_id:tripid,creator_id:userid},{$set:updateFields},{new:true});
     return updatedTrip
