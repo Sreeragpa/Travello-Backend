@@ -2,9 +2,7 @@ import app from "./frameworks/configs/app";
 import connectDb from "./frameworks/configs/db";
 import {createServer} from "http"
 import initializeSocketIO from "./frameworks/configs/socketio";
-import { NotificationRepository } from "./repository/notification.repository";
-import { NotificationUsecase } from "./usecase/notification.usecase";
-import { userSocketMap } from "./frameworks/configs/socketioHandlers";
+
 
 // Connect Database
 connectDb();

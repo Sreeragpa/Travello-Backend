@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "start": "ts-node ./src/server.ts",
+    "pm2start": "ts-node -T -P tsconfig.json ./src/server.ts"
   },
   "keywords": [],
   "author": "",
@@ -30,7 +32,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.4",
     "nodemailer": "^6.9.13",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.5",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/socket.io": "^3.0.2",
