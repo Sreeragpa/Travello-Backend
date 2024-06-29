@@ -7,22 +7,28 @@ import { ITripUsecase } from "../interfaces/usecase/ITrip.usecase";
 import { INotification } from "../entities/notification.entity";
 import { ErrorCode } from "../enums/errorCodes.enum";
 import { INotificationUsecase } from "../interfaces/usecase/INotification.usecase";
+import { IConversationRepository } from "../interfaces/repositories/IConversation.repositories";
 
 export class TripUsecase implements ITripUsecase {
   private tripRepository: ITripRepository;
   private cloudinaryService: CloudinaryService;
   private followRepository: IFollowRepository;
   private notificationUsecase: INotificationUsecase;
+  private conversationRepository: IConversationRepository;
+
   constructor(
     tripRepository: ITripRepository,
     cloudinaryService: CloudinaryService,
     followRepository: IFollowRepository,
-    notificationUsecase: INotificationUsecase
+    notificationUsecase: INotificationUsecase,
+    conversationRepository: IConversationRepository
+    
   ) {
     this.tripRepository = tripRepository;
     this.cloudinaryService = cloudinaryService;
     this.followRepository = followRepository;
     this.notificationUsecase = notificationUsecase;
+    this.conversationRepository = conversationRepository
   }
     async searchTrip(searchKey: string): Promise<ITrip[]> {
       const trips = await this.tripRepository.searchTrip(searchKey);
@@ -93,6 +99,9 @@ export class TripUsecase implements ITripUsecase {
         throw new Error(ErrorCode.USER_ALREADY_JOINED);
       }
       const isJoined = await this.tripRepository.addMember(memberid, tripid);
+      if(isJoined){
+        await this.conversationRepository.joinToGroup(isJoined.conversation_id as string,memberid)
+      }
       await this.notificationUsecase.marksAsRead(notificationid);
       return "Member Added";
     } catch (error) {
@@ -151,6 +160,11 @@ export class TripUsecase implements ITripUsecase {
           "https://static.vecteezy.com/system/resources/previews/000/207/516/original/road-trip-vector-illustration.jpg";
       }
       const createdTrip = await this.tripRepository.create(data);
+      if(createdTrip){
+        const newGroupConversation = await this.conversationRepository.createGroupConversation([data.creator_id],data.title);
+        await this.tripRepository.addConversationIdtoTrip(createdTrip._id as string,newGroupConversation._id as string)
+      }
+      // createdTrip.title
       return createdTrip;
     } catch (error) {
       throw error;

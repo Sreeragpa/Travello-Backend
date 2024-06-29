@@ -47,4 +47,15 @@ export class ConversationController {
             next(error)
         }
     }
+
+    async countUnreadConversations(req: AuthenticatedRequest, res: Response, next: NextFunction){
+        try {
+            const user = req.user as IJwtPayload;
+            const unreadConversationCount = await this.conversationUsecase.countUnreadConversations(user.user_id);
+            res.status(200).json({status:"message",data:unreadConversationCount})
+        } catch (error) {
+            next(error)
+        }
+
+    }
 }
