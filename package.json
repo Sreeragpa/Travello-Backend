@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon",
-    "start": "ts-node ./src/server.ts"
+    "start": "ts-node ./src/server.ts",
+    "pm2start": "ts-node -T -P tsconfig.json ./src/server.ts"
   },
   "keywords": [],
   "author": "",
