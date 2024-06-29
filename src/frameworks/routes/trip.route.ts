@@ -7,6 +7,7 @@ import { authMiddleware } from "../middlewares/auth.middleware";
 import { FollowRepository } from "../../repository/follow.repository";
 import { NotificationRepository } from "../../repository/notification.repository";
 import { NotificationUsecase } from "../../usecase/notification.usecase";
+import { ConversationRepository } from "../../repository/conversation.repository";
 
 const router = express.Router();
 const clodinaryService = new CloudinaryService();
@@ -14,8 +15,9 @@ const tripRepository = new TripRepository();
 const followRepository = new FollowRepository()
 const notificationRepository = new NotificationRepository()
 const notificationUsecase = new NotificationUsecase(notificationRepository)
+const conversationRepository = new ConversationRepository()
 
-const tripUsecase = new TripUsecase(tripRepository,clodinaryService,followRepository,notificationUsecase);
+const tripUsecase = new TripUsecase(tripRepository,clodinaryService,followRepository,notificationUsecase,conversationRepository);
 const tripController = new TripController(tripUsecase)
 
 router.post('/add-trip', authMiddleware,(req, res, next) => tripController.createTrip(req, res, next));

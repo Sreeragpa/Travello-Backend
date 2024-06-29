@@ -60,6 +60,9 @@ const tripSchema = new mongoose.Schema({
     memberlimit:{
         type: Number
     },
+    conversation_id:{
+      type: mongoose.Types.ObjectId
+    },
     description: {
       type: String,
       required: true

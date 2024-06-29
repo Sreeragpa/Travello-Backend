@@ -27,6 +27,7 @@ export interface ITrip {
     createdAt?: Date;
     updatedAt?: Date;
     istripfull?: boolean
+    conversation_id?: string
   }
   
 

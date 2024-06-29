@@ -12,13 +12,24 @@ export class MessageRepository implements IMessageRepository {
     }
     async getMessagesByConversationId(conversation_id: string,userid: string): Promise<IMessage[]> {
         try {
-           const messages = await MessageModel.find({conversation_id: conversation_id});
+        //    const messages = await MessageModel.find({conversation_id: conversation_id});
            
-           const messagess = await MessageModel.aggregate([
+           const messages = await MessageModel.aggregate([
             {
                 $match:{
                     conversation_id: new mongoose.Types.ObjectId(conversation_id)
                 }
+            },
+            {
+                $lookup:{
+                    from:"users",
+                    localField:"sender",
+                    foreignField:"_id",
+                    as:"senderDetails"
+                }
+            },
+            {
+                $unwind: "$senderDetails"
             }
            ])
            return messages
@@ -33,9 +44,35 @@ export class MessageRepository implements IMessageRepository {
                 sender: senderid,
                 text: text
             });
+            
 
             const savedMessage = await newMessage.save();
-            return savedMessage
+
+            const messageWithSenderDetails = await MessageModel.aggregate([
+                {
+                    $match: {
+                        _id: savedMessage._id
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "sender",
+                        foreignField: "_id",
+                        as: "senderDetails"
+                    }
+                },
+                {
+                    $unwind: "$senderDetails"
+                }
+            ]);
+
+            if (messageWithSenderDetails.length > 0) {
+                return messageWithSenderDetails[0];
+            } else {
+                throw new Error("Failed to fetch sender details.");
+            }
+
         } catch (error) {
             throw error
         }

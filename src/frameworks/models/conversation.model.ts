@@ -11,6 +11,11 @@ const conversationSchema = new mongoose.Schema({
     },
     groupName:{
         type: String
+    },
+    unreadMessage: {
+        type: Map,
+        of: Boolean,
+        default: {}
     }
 
 },{timestamps: true});
