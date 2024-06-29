@@ -23,5 +23,8 @@ router.post('/add-conversation',authMiddleware,(req: Request,res: Response, next
 router.get('/get-conversation/:conversationid',authMiddleware,(req: Request,res: Response, next: NextFunction)=>{
     conversationController.getSingleConversation(req,res,next)
 })
+router.get('/unread-conversation/count',authMiddleware,(req: Request,res: Response, next: NextFunction)=>{
+    conversationController.countUnreadConversations(req,res,next)
+})
 
 export default router

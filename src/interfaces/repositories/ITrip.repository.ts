@@ -6,7 +6,7 @@ export interface ITripRepository{
     create(data: ITrip): Promise<ITrip>
     findTripsbyCreatorid(userid: string, creator_id:mongoose.Types.ObjectId[]):Promise<ITrip[]>
     hasUserJoinedTrip(userId: string, tripId: string): Promise<boolean>;
-    addMember(memberid: string,tripid: string): Promise<boolean>
+    addMember(memberid: string,tripid: string): Promise<ITrip>
     isTripFull(tripId: string): Promise<boolean> 
     count(userid: string): Promise<number>
     findUserTrips(userid: string): Promise<ITrip[]>
@@ -14,6 +14,7 @@ export interface ITripRepository{
     findNearbyTrips(userid: string,userLocation: IUserLocation, maxDistance: number): Promise<ITrip[]>
     findOneandUpdate(userid: string,tripid: string,updateFields:Partial<IEditTrip>): Promise<ITrip | null>
     searchTrip(searchKey: string): Promise<ITrip[]>
+    addConversationIdtoTrip(tripid: string, conversationid: string): Promise<ITrip>
 
 
 }

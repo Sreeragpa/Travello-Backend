@@ -4,6 +4,17 @@ import { TripModel } from "../frameworks/models/trip.model";
 import { ITripRepository, IUserLocation } from "../interfaces/repositories/ITrip.repository";
 
 export class TripRepository implements ITripRepository {
+  async addConversationIdtoTrip(tripid: string ,conversationid: string): Promise<ITrip> {
+    const updatedTrip = await TripModel.findOneAndUpdate(
+      { _id: tripid },
+      { $set: { conversation_id: new mongoose.Types.ObjectId(conversationid) } },
+      { new: true }
+    )
+    if(!updatedTrip){
+      throw new Error("Trip Not Found");
+    }
+    return updatedTrip
+  }
   async searchTrip(searchKey: string): Promise<ITrip[]> {
     const searchRegex = new RegExp(searchKey, 'i');
     // const trips = await TripModel.find({ $text: { $search: searchKey } });
@@ -204,13 +215,18 @@ export class TripRepository implements ITripRepository {
     }
     return trip.members.length >= trip.memberlimit;
   }
-  async addMember(memberid: string, tripid: string): Promise<boolean> {
+  async addMember(memberid: string, tripid: string): Promise<ITrip> {
     try {
-      const result = await TripModel.updateOne(
+      const updatedTrip = await TripModel.findOneAndUpdate(
         { _id: tripid },
-        { $addToSet: { members: new mongoose.Types.ObjectId(memberid) } }
-      );
-      return result ? true : false;
+        { $addToSet: { members: new mongoose.Types.ObjectId(memberid) } },
+        { new: true }
+        
+    )
+    if (!updatedTrip) {
+      throw new Error("Trip not found.");
+    }
+      return updatedTrip 
     } catch (error) {
       throw error;
     }

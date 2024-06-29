@@ -10,12 +10,17 @@ export class ConversationUsecase implements IConversationUsecase{
         this.conversationRepository = conversationRepository
         this.messageRepository = messageRepository
     }
+    createGroupConversation(members: string[], groupName: string): Promise<IConversation[]> {
+        throw new Error("Method not implemented.");
+        // const newConversation 
+    }
     async getConversationByid(userid: string,conversation_id: string): Promise<IConversation> {
         let conversation = await this.conversationRepository.findOneConversationwithUserDetails(conversation_id);
         if(!conversation){
             return conversation
         }
         const filteredMemberDetails = conversation.memberDetails?.filter((user) => user._id.toString() !== userid);
+
 
         return {
             ...conversation,
@@ -38,18 +43,30 @@ export class ConversationUsecase implements IConversationUsecase{
 
             const filteredMembers = convo.memberDetails?.filter(user => String(user._id) !== userid);
     
-            const lastMessage = await this.messageRepository.findLastMessage(convo._id as string); // Assuming a method to find last message
+            // const lastMessage = await this.messageRepository.findLastMessage(convo._id as string); 
 
           
             return {
                 ...convo,
                 memberDetails: filteredMembers,
-                lastMessage: lastMessage?lastMessage.text:null // Add the lastMessage property to the conversation object
             };
         }));
 
         
         return conversationsWithLastMessage
+    }
+
+    async countUnreadConversations(userId: string): Promise<number> {
+        const conversations = await this.conversationRepository.findByUserId(userId);
+        let unreadCount = 0;
+
+        conversations.forEach(conversation => {
+            if (conversation.unreadMessage.has(userId) && conversation.unreadMessage.get(userId)) {
+                unreadCount++;
+            }
+        });
+
+        return unreadCount;
     }
     
 }
