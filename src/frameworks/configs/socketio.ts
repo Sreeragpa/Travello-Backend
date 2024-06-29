@@ -10,6 +10,7 @@ export default function initializeSocketIO(server: HttpServer) {
         'http://10.4.4.139:4200',
         'http://10.4.5.201:4200',
         'http://192.168.18.167:4200',
+        'http://10.4.3.148:4200'
         
       ],
       methods: ["GET", "POST"],

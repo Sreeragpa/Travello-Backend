@@ -31,7 +31,8 @@ const allowedOrigins = [
   'http://localhost:4200', // Allow requests from Angular application on localhost
   'http://10.4.4.139:4200', // Allow requests from Angular application on specific IP
   'http://10.4.5.201:4200',
-  'http://192.168.18.167:4200'
+  'http://192.168.18.167:4200',
+  'http://10.4.3.148:4200'
 ];
 // Enable CORS 
 app.use(cors({
