@@ -7,10 +7,8 @@ export default function initializeSocketIO(server: HttpServer) {
     cors: {
       origin: [
         'http://localhost:4200',
-        'http://10.4.4.139:4200',
-        'http://10.4.5.201:4200',
-        'http://192.168.18.167:4200',
-        'http://10.4.3.148:4200'
+         'https://travello.srg.buzz',
+        'http://travello.srg.buzz'
         
       ],
       methods: ["GET", "POST"],
