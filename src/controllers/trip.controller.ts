@@ -79,6 +79,7 @@ export class TripController {
       const user = req.user as IJwtPayload;
       const query = req.query.by;
       const tripid = req.params.id;
+      const page = Number(req.query.page) || 1;
 
       
       let {long,lat} = req.query;
@@ -88,7 +89,7 @@ export class TripController {
       if(tripid){
         trips = await this.tripUsecase.getSingleTrip(user.user_id,tripid)
       }else if (query === "following") {
-        trips = await this.tripUsecase.getTripsbyFollowing(user.user_id);
+        trips = await this.tripUsecase.getTripsbyFollowing(user.user_id,page);
       } else {
         // Nearby logic
 
@@ -100,7 +101,7 @@ export class TripController {
           // longitude = 11.1825447;
           // latitude = 75.8375372;
           
-          trips = await this.tripUsecase.getTripsNearby(user.user_id,[longitude,latitude],10000);
+          trips = await this.tripUsecase.getTripsNearby(user.user_id,[longitude,latitude],10000,page);
           
         }
         // trips = await this.tripUsecase.getTripsNearby()

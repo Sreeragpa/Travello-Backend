@@ -50,9 +50,9 @@ export class TripUsecase implements ITripUsecase {
     }
 
   }
-  async getTripsNearby(userid: string,userLocation: IUserLocation, maxDistance: number): Promise<ITrip[]> {
+  async getTripsNearby(userid: string,userLocation: IUserLocation, maxDistance: number,page: number): Promise<ITrip[]> {
     try {
-      const nearby = await this.tripRepository.findNearbyTrips(userid,userLocation, 5000);
+      const nearby = await this.tripRepository.findNearbyTrips(userid,userLocation, 5000,page,2);
       return nearby
     } catch (error) {
       throw error
@@ -130,9 +130,8 @@ export class TripUsecase implements ITripUsecase {
     }
   }
 
-  async getTripsbyFollowing(userid: string): Promise<ITrip[]> {
+  async getTripsbyFollowing(userid: string,page: number): Promise<ITrip[]> {
     const followedUsers = await this.followRepository.getFollowing(userid);
-    console.log(followedUsers,"followedusers");
     
     const followedUserIds = followedUsers.map(
       (follow) => new mongoose.Types.ObjectId(follow.following_id)
@@ -142,7 +141,9 @@ export class TripUsecase implements ITripUsecase {
 
     const trips = await this.tripRepository.findTripsbyCreatorid(
       userid,
-      followedUserIds
+      followedUserIds,
+      page,
+      2
     );
 
     return trips;

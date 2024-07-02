@@ -119,13 +119,13 @@ export class PostUsecase implements IPostUsecase {
             throw error;
         }
     }
-    async getPosts(userid: string, postid: string | null): Promise<IPost[]> {
+    async getPosts(userid: string, postid: string | null,page: number ): Promise<IPost[]> {
         try {
             let posts: IPost[] = [];
             if (postid) {
                 posts = await this.postRepository.findOne(postid);
             } else {
-                posts = await this.postRepository.findAll();
+                posts = await this.postRepository.findAll(page,3);
             }
 
             const postsWithAllInfo = await Promise.all(

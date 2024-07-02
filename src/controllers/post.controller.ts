@@ -43,8 +43,9 @@ export class PostController{
     async getPosts(req: AuthenticatedRequest,res: Response, next: NextFunction){
         try {
             const user = req.user as IJwtPayload;
+            const page = Number(req.query.page) || 1;
             const id = req.params.id;
-            const posts = await this.postUsecase.getPosts(user.user_id,id);
+            const posts = await this.postUsecase.getPosts(user.user_id,id,page);
             res.status(200).json({ status: 'success', data: posts });
 
         } catch (error) {

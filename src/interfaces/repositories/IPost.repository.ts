@@ -6,7 +6,7 @@ export interface IPostRepository {
     create(data: IPost): Promise<IPost>;
     update(id: string, data: Partial<IPost>): Promise<IPost | null>;
     findById(id: string): Promise<IPost | null>;
-    findAll(): Promise<IPost[]>;    
+    findAll(page: number,limit: number): Promise<IPost[]>;    
     findOne(postid: string): Promise<IPost[]>;
     likePost(userid: string, postid: string): Promise<IPostLike>;
     unlikePost(userid: string, postid: string): Promise<any>;

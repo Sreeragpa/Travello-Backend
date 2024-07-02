@@ -31,8 +31,8 @@ export class TripRepository implements ITripRepository {
     const updatedTrip = await TripModel.findOneAndUpdate({_id:tripid,creator_id:userid},{$set:updateFields},{new:true});
     return updatedTrip
   }
-  async findNearbyTrips(userid: string,userLocation: IUserLocation, maxDistance: number): Promise<ITrip[]> {
-
+  async findNearbyTrips(userid: string,userLocation: IUserLocation, maxDistance: number,page: number,limit: number): Promise<ITrip[]> {
+    const skip = (page-1) * limit
     try {
       const trips = await TripModel.aggregate([
         {
@@ -108,7 +108,14 @@ export class TripRepository implements ITripRepository {
         },
         {
           $sort: { distance: 1 }
+        },
+        {
+          $skip:skip
+        },
+        {
+          $limit:limit
         }
+        
       ] as any); //
       
       return trips
@@ -246,9 +253,12 @@ export class TripRepository implements ITripRepository {
   }
   async findTripsbyCreatorid(
     userid: string,
-    creator_id: mongoose.Types.ObjectId[]
+    creator_id: mongoose.Types.ObjectId[],
+    page: number,limit: number
   ): Promise<ITrip[]> {
     //  await TripModel.find({ creator_id: { $in: creator_id } }).populate("creator_id")
+
+    const skip = (page-1) * limit
 
     const trips = await TripModel.aggregate([
       {
@@ -318,6 +328,12 @@ export class TripRepository implements ITripRepository {
           createdAt: -1,
         },
       },
+      {
+        $skip:skip
+      },
+      {
+        $limit:limit
+      }
     ]);
 
     return trips;

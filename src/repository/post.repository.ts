@@ -125,7 +125,8 @@ export class PostRepository implements IPostRepository {
   findById(id: string): Promise<IPost | null> {
     throw new Error("Method not implemented.");
   }
-  async findAll(): Promise<IPost[]> {
+  async findAll(page: number,limit: number): Promise<IPost[]> {
+    const skip = (page - 1) * limit;
     const posts = await PostModel.aggregate([
       {
         $lookup: {
@@ -159,6 +160,12 @@ export class PostRepository implements IPostRepository {
         $sort: {
           createdAt: -1
         }
+      },
+      {
+        $skip: skip
+      },
+      {
+        $limit: limit
       }
     ]);
 
