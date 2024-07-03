@@ -67,7 +67,7 @@ export default class AdminController{
 
     async getPostStatistics(req: Request,res: Response,next: NextFunction){
         const period = Number(req.query.period);
-        if(!period){
+        if(!period && period!==0){
             return res.status(401).json({ message: 'Period Required'});
         }
         const data = await this.adminUsecase.postsCountByDate(period);
@@ -75,7 +75,7 @@ export default class AdminController{
     }
     async getTripStatistics(req: Request,res: Response,next: NextFunction){
         const period = Number(req.query.period);
-        if(!period){
+        if(!period && period!==0){
             return res.status(401).json({ message: 'Period Required'});
         }
         const data = await this.adminUsecase.tripsCountByDate(period);
@@ -83,7 +83,7 @@ export default class AdminController{
     }
     async getUserStatistics(req: Request,res: Response,next: NextFunction){
         const period = Number(req.query.period);
-        if(!period){
+        if(!period && period!==0){
             return res.status(401).json({ message: 'Period Required'});
         }
         const data = await this.adminUsecase.usersCountByDate(period);
