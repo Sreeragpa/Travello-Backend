@@ -8,10 +8,10 @@ export function signJWT(payload: object, expiresIn: string | number): string {
 }
 
 // Verify JWT
-export function verifyJWT(token: string): object | null {
+export function verifyJWT<T>(token: string): T | null {
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        return decoded as object;
+        return decoded as T;
     } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
             return null; // Token has expired

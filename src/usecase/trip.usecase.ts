@@ -53,6 +53,7 @@ export class TripUsecase implements ITripUsecase {
   async getTripsNearby(userid: string,userLocation: IUserLocation, maxDistance: number,page: number): Promise<ITrip[]> {
     try {
       const nearby = await this.tripRepository.findNearbyTrips(userid,userLocation, 5000,page,2);
+      
       return nearby
     } catch (error) {
       throw error

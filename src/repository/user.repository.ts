@@ -4,9 +4,67 @@ import { UserModel } from "../frameworks/models/user.model";
 import { IUserRepository } from "../interfaces/repositories/IUser.repository";
 import { AuthModel } from "../frameworks/models/auth.model";
 import { ErrorCode } from "../enums/errorCodes.enum";
+import { IStatisticsData } from "../entities/admin.entity";
 export interface IUserData extends Document{}
 
 export class UserRepository implements IUserRepository{
+    async blockUser(userid: string): Promise<IUser> {
+      const user = await UserModel.findOneAndUpdate({_id: userid},{$set:{isBlocked: true}});
+      if (!user) {
+        throw new Error(`User with id ${userid} not found.`);
+      }
+      return user
+    }
+    async unBlockUser(userid: string): Promise<IUser> {
+      const user = await UserModel.findOneAndUpdate({_id: userid},{$set:{isBlocked: false}});
+      if (!user) {
+        throw new Error(`User with id ${userid} not found.`);
+      }
+      return user
+    }
+    async getAllUser(): Promise<IUser[]> {
+      const users = await UserModel.find();
+      return users
+    }
+    async getUserCountByDate(days: number): Promise<IStatisticsData[]> {
+      let matchStage = {};
+
+      if (days === 0) {
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+  
+        matchStage = {
+          createdAt: { $gte: startOfDay, $lte: endOfDay }
+        };
+      } else {
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - days);
+  
+        matchStage = {
+          createdAt: { $gte: startDate }
+        };
+      }
+  
+      const data = await UserModel.aggregate([
+        {
+          $match: matchStage
+        },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            count: { $sum: 1 }
+          }
+        },
+        {
+          $sort: { _id: 1 }
+        }
+      ]);
+  
+      console.log(data);
+      return data
+    }
     async searchUser(searchKey: string): Promise<IUser[]> {
       const regex = new RegExp(searchKey, 'i');
       const users = await UserModel.find({$or:[

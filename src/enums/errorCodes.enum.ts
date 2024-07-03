@@ -8,6 +8,7 @@ export enum ErrorCode {
     USER_NOT_FOUND = 'USER_NOT_FOUND', // User does not exist
     INVALID_CREDENTIALS = 'INVALID_CREDENTIALS', // Incorrect username/password
     USER_NOT_VERIFIED = 'USER_NOT_VERIFIED',
+    INVALID_ADMIN_EMAIL = 'INVALID_ADMIN_EMAIL',
 
     // Validation errors
     VALIDATION_ERROR = 'VALIDATION_ERROR', // Request data validation failed

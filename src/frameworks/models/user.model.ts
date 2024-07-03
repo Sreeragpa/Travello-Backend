@@ -41,7 +41,11 @@ const UserSchema = new mongoose.Schema({
     bio:{
         type: String,
         default:"New to Travello"
+    },
+    isBlocked:{
+        type: Boolean,
+        default: false
     }
-})
+},{timestamps:true})
 
 export const UserModel = mongoose.model<IUser>("Users",UserSchema);

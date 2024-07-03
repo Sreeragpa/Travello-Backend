@@ -2,8 +2,49 @@ import mongoose, { Types } from "mongoose";
 import { IEditTrip, ITrip } from "../entities/trip.entity";
 import { TripModel } from "../frameworks/models/trip.model";
 import { ITripRepository, IUserLocation } from "../interfaces/repositories/ITrip.repository";
+import { IStatisticsData } from "../entities/admin.entity";
 
 export class TripRepository implements ITripRepository {
+  async getTripsCountByDate(days: number): Promise<IStatisticsData[]> {
+    let matchStage = {};
+
+    if (days === 0) {
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+
+      matchStage = {
+        createdAt: { $gte: startOfDay, $lte: endOfDay }
+      };
+    } else {
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+
+      matchStage = {
+        createdAt: { $gte: startDate }
+      };
+    }
+
+    const data = await TripModel.aggregate([
+      {
+        $match: matchStage
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { _id: 1 }
+      }
+    ]);
+
+    console.log(data);
+    return data
+    
+  }
   async addConversationIdtoTrip(tripid: string ,conversationid: string): Promise<ITrip> {
     const updatedTrip = await TripModel.findOneAndUpdate(
       { _id: tripid },

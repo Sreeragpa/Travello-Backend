@@ -25,8 +25,6 @@ export class MessageUsecase implements IMessageUsecase{
 
         await this.conversationRepository.MarkasUnRead(conversation_id, userid);
 
-
-
         // Send Notification to all users in that conversation
             usersinCoversation.memberDetails?.forEach((user)=>{
                 io.to( userSocketMap[user._id]).emit('newMessageNotification', { conversation_id, message });

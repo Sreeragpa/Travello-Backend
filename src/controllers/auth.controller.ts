@@ -44,7 +44,7 @@ export class AuthController{
                 secure: true,  // Use true if you're serving over HTTPS
                 sameSite: 'none'  // Allows cross-site cookie usage
               });
-            console.log('cookieset');
+
             
             res.status(200).json({ status: 'success', data: token });
 

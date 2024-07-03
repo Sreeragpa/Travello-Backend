@@ -1,4 +1,5 @@
-import IPost, { IPostLike, ISave } from "../../entities/post.entity";
+import { IStatisticsData } from "../../entities/admin.entity";
+import IPost, { IPostLike,   ISave } from "../../entities/post.entity";
 import { ILikedUser } from "./IUser.repository";
 
 
@@ -18,4 +19,5 @@ export interface IPostRepository {
     findSave(userid: string, postid: string): Promise<ISave | null>
     getlikedUsers(userid: string,postid: string): Promise<ILikedUser[]>
     count(userid: string): Promise<number>
+    getPostCountByDate(days: number): Promise<IStatisticsData[]>
 }

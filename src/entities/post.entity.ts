@@ -29,3 +29,4 @@ export interface IPostLike {
   createdAt: Date;
   updatedAt: Date;
 }
+

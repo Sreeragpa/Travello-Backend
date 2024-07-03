@@ -1,6 +1,7 @@
 import mongoose, { Types } from "mongoose";
 const {ObjectId} = Types 
 import { IEditTrip, ITrip } from "../../entities/trip.entity";
+import { IStatisticsData } from "../../entities/admin.entity";
 
 export interface ITripRepository{
     create(data: ITrip): Promise<ITrip>
@@ -15,6 +16,7 @@ export interface ITripRepository{
     findOneandUpdate(userid: string,tripid: string,updateFields:Partial<IEditTrip>): Promise<ITrip | null>
     searchTrip(searchKey: string): Promise<ITrip[]>
     addConversationIdtoTrip(tripid: string, conversationid: string): Promise<ITrip>
+    getTripsCountByDate(days: number): Promise<IStatisticsData[]>
 
 
 }

@@ -1,13 +1,55 @@
 import mongoose from "mongoose";
-import IPost, { ISave } from "../entities/post.entity";
+import IPost, {  ISave } from "../entities/post.entity";
 import { PostModel } from "../frameworks/models/post.model";
 import { PostLikeModel } from "../frameworks/models/postLikes.models";
 import { IPostRepository } from "../interfaces/repositories/IPost.repository";
 import { SaveModel } from "../frameworks/models/saves.model";
 import { Model } from "mongoose";
 import { ILikedUser } from "../interfaces/repositories/IUser.repository";
+import { IStatisticsData } from "../entities/admin.entity";
 
 export class PostRepository implements IPostRepository {
+  async getPostCountByDate(days: number): Promise<IStatisticsData[]> {
+    let matchStage = {};
+
+    if (days === 0) {
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+
+      matchStage = {
+        createdAt: { $gte: startOfDay, $lte: endOfDay }
+      };
+    } else {
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+
+      matchStage = {
+        createdAt: { $gte: startDate }
+      };
+    }
+
+    const data = await PostModel.aggregate([
+      {
+        $match: matchStage
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { _id: 1 }
+      }
+    ]);
+
+    console.log(data);
+    return data
+    
+
+  }
   async count(userid: string): Promise<number> {
     try {
       const postCount = await PostModel.countDocuments({creator_id:userid}) 

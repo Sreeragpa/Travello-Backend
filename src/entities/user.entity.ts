@@ -14,5 +14,6 @@ export default interface IUser extends Document{
     password?: string;
     profileimg?: string;
     bio: string;
-    isFollowing:boolean
+    isFollowing:boolean;
+    isBlocked: boolean
   }
