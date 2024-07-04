@@ -50,5 +50,9 @@ router.post('/unblock/user/:id',adminAuthMiddleware,(req: Request,res: Response,
     adminController.unBlockUser(req,res,next)
 })
 
+router.post('/logout',(req: Request,res: Response, next: NextFunction)=>{
+    adminController.logout(req,res,next)
+})
+
 
 export default router

@@ -143,4 +143,14 @@ export default class AdminController{
         }
     }
 
+    async logout(req: Request, res: Response, next: NextFunction){
+        res.cookie('authTokenAdmin', '', {
+            httpOnly: true,
+            secure: true, 
+            sameSite: 'none',
+            expires: new Date(0), // Set expiration date to the past
+          });
+        res.status(200).json({status:"success",data:"Logged out successfully"})
+    }
+
 }
