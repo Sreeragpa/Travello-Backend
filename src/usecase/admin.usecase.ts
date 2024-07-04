@@ -23,12 +23,11 @@ export class AdminUsecase implements IAdminUsecase {
     }
     async blockUser(userid: string): Promise<IUser> {
         const blockedUser = await this.userRepository.blockUser(userid)
-        throw new Error("Method not implemented.");
+        return blockedUser
     }
     async unBlockUser(userid: string): Promise<IUser> {
         const unBlockedUser = await this.userRepository.unBlockUser(userid)
-
-        throw new Error("Method not implemented.");
+        return unBlockedUser
     }
     async searchUsers(query: string): Promise<IUser[]> {
         const users = await this.userRepository.searchUser(query)
