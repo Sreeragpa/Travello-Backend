@@ -55,7 +55,7 @@ router.post('/logout',(req: Request,res: Response, next: NextFunction)=>{
 })
 
 router.get('/isAdmin',adminAuthMiddleware,(req: Request,res: Response, next: NextFunction)=>{
-    adminController.logout(req,res,next)
+    adminController.isAdmin(req,res,next)
 })
 
 
