@@ -153,4 +153,8 @@ export default class AdminController{
         res.status(200).json({status:"success",data:"Logged out successfully"})
     }
 
+    async isAdmin(req: Request, res: Response, next: NextFunction){
+        res.status(200).json({status:"success",data:true})
+    }
+
 }

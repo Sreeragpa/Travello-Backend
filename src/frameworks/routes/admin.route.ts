@@ -54,5 +54,9 @@ router.post('/logout',(req: Request,res: Response, next: NextFunction)=>{
     adminController.logout(req,res,next)
 })
 
+router.get('/isAdmin',adminAuthMiddleware,(req: Request,res: Response, next: NextFunction)=>{
+    adminController.logout(req,res,next)
+})
+
 
 export default router
