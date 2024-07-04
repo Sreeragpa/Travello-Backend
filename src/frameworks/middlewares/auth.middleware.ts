@@ -25,7 +25,7 @@ export const authMiddleware = async(req: AuthenticatedRequest, res: Response, ne
             return res.status(401).json({ message: 'Unauthorized' });
         }
           // Fetch the user from the database
-          const user = await UserModel.findById(userData.id);
+          const user = await UserModel.findById(userData.user_id);
 
           if (!user) {
               return res.status(404).json({ message: 'User not found' });

@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+  import { NextFunction, Request, Response } from "express";
 
  const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
     console.error(err.stack); // Log the error stack for debugging
