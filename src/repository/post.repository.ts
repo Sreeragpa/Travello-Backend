@@ -195,6 +195,7 @@ export class PostRepository implements IPostRepository {
           'user.username': 1,
           'user._id': 1,
           'user.profileimg': 1,
+          'user.isPremium': 1,
           likes: 1
         }
       },
@@ -249,6 +250,7 @@ export class PostRepository implements IPostRepository {
           'user.username': 1,
           'user._id': 1,
           'user.profileimg': 1,
+          'user.isPremium': 1,
           likes: 1
         }
       },
@@ -343,7 +345,8 @@ export class PostRepository implements IPostRepository {
           "likedUser.username": 1,
           // "likedUser.isFollowing": 1,
           "likedUser.isMutualFollow": 1,
-          "likedUser.profileimg": 1
+          "likedUser.profileimg": 1,
+          'likedUser.isPremium': 1,
         }
       }
     ]);
