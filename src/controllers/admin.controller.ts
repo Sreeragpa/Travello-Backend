@@ -117,8 +117,10 @@ export default class AdminController{
     async blockUser(req: Request,res: Response,next: NextFunction){
         try {
             const userid = req.params.id;
+            console.log(userid);
+            
             if(userid){
-                return res.status(401).json({ message: 'Invalid Userid'})
+                return res.status(400).json({ message: 'Invalid Userid'})
             }
            const user = await this.adminUsecase.blockUser(userid);
            res.status(200).json({ status: 'success', data: user });
@@ -131,7 +133,7 @@ export default class AdminController{
         try {
             const userid = req.params.id;
             if(userid){
-                return res.status(401).json({ message: 'Invalid Userid'})
+                return res.status(400).json({ message: 'Invalid Userid'})
             }
             const user = await this.adminUsecase.unBlockUser(userid)
             res.status(200).json({ status: 'success', data: user });

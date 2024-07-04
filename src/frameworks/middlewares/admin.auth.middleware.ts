@@ -11,6 +11,7 @@ export interface AuthenticatedAdminRequest extends Request {
 export const adminAuthMiddleware = (req: AuthenticatedAdminRequest, res: Response, next: NextFunction) => {
     try {
         const authToken = req.cookies.authTokenAdmin;
+
         
         if (!authToken) {
             return res.sendStatus(401);
