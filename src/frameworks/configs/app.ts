@@ -34,12 +34,27 @@ const allowedOrigins = [
   'http://travello.srg.buzz'
 ];
 // Enable CORS 
+// app.use(cors({
+//     // origin: 'http://localhost:4200', // Allow requests from Angular application
+//     origin: allowedOrigins, // Allow requests from Angular application
+//     optionsSuccessStatus: 200 ,
+//     credentials: true // Include credentials (cookies) in cross-origin requests
+//   }));
 app.use(cors({
-    // origin: 'http://localhost:4200', // Allow requests from Angular application
-    origin: allowedOrigins, // Allow requests from Angular application
-    optionsSuccessStatus: 200 ,
-    credentials: true // Include credentials (cookies) in cross-origin requests
-  }));
+  origin: (origin, callback) => {
+    // if (allowedOrigins.includes(origin as string) || !origin) {
+      
+    // } else {
+    //   callback(new Error('Not allowed by CORS'));
+    // }
+
+    callback(null, true);
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+}));
 
 // Cookie-Parser
 app.use(cookieParser())
