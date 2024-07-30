@@ -33,19 +33,24 @@ const allowedOrigins = [
   'https://travello.srg.buzz',
   'http://travello.srg.buzz'
 ];
-const corsOptions = {
-  origin: function (origin:any, callback:any) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  optionsSuccessStatus: 200, // Some legacy browsers choke on 204
-  credentials: true // Include credentials (cookies) in cross-origin requests
-};
+// const corsOptions = {
+//   origin: function (origin:any, callback:any) {
+//     // Allow requests with no origin (like mobile apps or curl requests)
+//     if (!origin) return callback(null, true);
+//     if (allowedOrigins.indexOf(origin) !== -1) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   optionsSuccessStatus: 200, // Some legacy browsers choke on 204
+//   credentials: true // Include credentials (cookies) in cross-origin requests
+// };
+const corsOptions ={
+  origin:'*', 
+  credentials:true,            //access-control-allow-credentials:true
+  optionSuccessStatus:200,
+}
 
 // Enable CORS 
 app.use(cors(corsOptions));
