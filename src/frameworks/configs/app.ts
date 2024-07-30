@@ -30,8 +30,8 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false }));
 const allowedOrigins = [
   'http://localhost:4200', // Allow requests from Angular application on localhost
-  'https://travello.srg.buzz',
-  'http://travello.srg.buzz'
+  'https://travello.srg.buzz/',
+  'http://travello.srg.buzz/'
 ];
 // Enable CORS 
 app.use(cors({
