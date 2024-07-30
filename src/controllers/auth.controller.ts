@@ -52,6 +52,27 @@ export class AuthController{
             next(error)
         }
     }
+    async googleSignin(req: Request, res: Response, next: NextFunction){
+        try {    
+            const { idToken } = req.body;
+            if(!idToken){
+                throw new Error("Missing Token")
+            }
+            const token = await this.authUsecase.userSigninGoogle(idToken);
+            // res.cookie('authToken', token, { httpOnly: true });
+            res.cookie('authToken', token, {
+                httpOnly: true,
+                secure: true,  // Use true if you're serving over HTTPS
+                sameSite: 'none'  // Allows cross-site cookie usage
+              });
+
+            
+            res.status(200).json({ status: 'success', data: token });
+
+        } catch (error) {
+            next(error)
+        }
+    }
 
     async resetPassword(req: Request, res: Response, next: NextFunction){
         try {

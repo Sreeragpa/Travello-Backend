@@ -5,7 +5,8 @@ interface IAuth {
     password: string;
     token?: string[];
     verified: boolean;
-    userid: string
+    userid: string;
+    isGoogleAuth: boolean
 }
   
   export default IAuth;

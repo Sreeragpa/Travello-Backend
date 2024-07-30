@@ -99,25 +99,23 @@ export class AuthRepository implements IAuthRepository {
         return user !== null;
     }
     async checkEmailExists(email: string): Promise<Boolean> {
-
         const user = await AuthModel.findOne({ email: email });
-
-
         return user !== null;
     }
 
-    async create(data: IUser): Promise<IUser> {
+    async create(data: IUser,isGoogleAuth:boolean = false): Promise<IUser> {
         const user = new UserModel({
             email: data.email,
             username: data.username,
-            name: data.username
+            name: data.username,
+            bio:"New to Travello! ✈️ Exploring the world",
         })
         const newAuth = new AuthModel({
             email: data.email,
             username: data.username,
             password: data.password,
             userid:user._id,
-            bio:"New to Travello! ✈️ Exploring the world"
+            isGoogleAuth: isGoogleAuth
         })
         const saved = await user.save();
         const authsaved = await newAuth.save();

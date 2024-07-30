@@ -5,7 +5,6 @@ import { ICommentRepository } from "../interfaces/repositories/IComment.reposito
 
 export class CommentRepository implements ICommentRepository{
     async getCommentsByPostId(postId: string): Promise<IComment[]> {
-        // const comments = await CommentModel.find({post_id:postId}).populate("author_id")
         const comments = await CommentModel.aggregate([
             { $match: { post_id: new mongoose.Types.ObjectId(postId) } },
             {$lookup:{

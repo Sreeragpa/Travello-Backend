@@ -24,6 +24,10 @@ const AuthSchema = new mongoose.Schema({
     }],
     userid:{
         type: mongoose.Types.ObjectId
+    },
+    isGoogleAuth:{
+        type:Boolean,
+        default:false
     }
    
 })

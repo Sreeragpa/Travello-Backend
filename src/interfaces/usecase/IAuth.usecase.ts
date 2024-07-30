@@ -3,6 +3,7 @@ import IUser from "../../entities/user.entity"
 
 export interface IAuthUsecase{
     userSignin(data:IAuth): any
+    userSigninGoogle(data:string): any
     userSignup(data:IUser): any
     forgotPassword(email: string): any
     verifyOtp(email: string, otp: string): any

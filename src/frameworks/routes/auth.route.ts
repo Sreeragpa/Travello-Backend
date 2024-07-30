@@ -20,6 +20,9 @@ router.post('/verify-otp',(req: Request, res: Response, next: NextFunction)=>{
 router.post('/signin', (req: Request, res: Response, next: NextFunction)=>{
     authController.signin(req,res,next)
 });
+router.post('/google', (req: Request, res: Response, next: NextFunction)=>{
+    authController.googleSignin(req,res,next)
+});
 router.get('/test', (req: Request, res: Response, next: NextFunction)=>{
     res.status(200).json({message:"/api/auth Working like a pro"})
 });

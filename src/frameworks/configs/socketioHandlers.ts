@@ -45,19 +45,12 @@ export default function setupSocketHandlers(io: Server) {
 
       console.log("unfollow event received with data:", data);
       try {
-        const { followingid } = data;
-        const followerid = user.user_id;
-        // const result = await followUsecase.unfollow(followerid, followingid);
         socket.emit("unfollowResponse", { success: true, data: "result" });
       } catch (error) {
         socket.emit("unfollowResponse", { success: false, error: error });
       }
     });
 
-    socket.on('test',async(data)=>{
-      console.log(data,"data from test socket");
-      
-    })
     socket.on('joinConversation', (conversationId) => {
       socket.join(conversationId);
       console.log(`User ${socket.id} joined conversation ${conversationId}`);
