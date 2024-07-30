@@ -46,11 +46,11 @@ const allowedOrigins = [
 //   optionsSuccessStatus: 200, // Some legacy browsers choke on 204
 //   credentials: true // Include credentials (cookies) in cross-origin requests
 // };
-const corsOptions ={
-  origin:'*', 
-  credentials:true,            //access-control-allow-credentials:true
-  optionSuccessStatus:200,
-}
+const corsOptions = {
+  origin: 'https://travello.srg.buzz',
+  credentials: true,
+  optionSuccessStatus: 200,
+};
 
 // Enable CORS 
 app.use(cors(corsOptions));
