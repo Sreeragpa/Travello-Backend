@@ -31,6 +31,8 @@ export class AuthUsecase implements IAuthUsecase {
     console.log("heyyy inside");
 
       const authData: IAuth = { email: payload.email } as IAuth;
+      console.log(payload);
+      
 
       const payloadJWT = { id: user._id, email: user.email, user_id: user.userid };
       const token = signJWT(payloadJWT, 8);
