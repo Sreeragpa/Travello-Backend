@@ -109,6 +109,7 @@ export class AuthRepository implements IAuthRepository {
             username: data.username,
             name: data.username,
             bio:"New to Travello! ✈️ Exploring the world",
+            profileimg:data.profileimg
         })
         const newAuth = new AuthModel({
             email: data.email,
