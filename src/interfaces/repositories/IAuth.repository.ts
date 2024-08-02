@@ -15,4 +15,5 @@ export interface IAuthRepository{
     verifyUserAccount(email: string): Promise<IAuth | null>
     logout(): Promise<string>
     findPassword(userid: string,password: string): Promise<string>
+    checkUser(email:string): Promise<IAuth | null>
 }

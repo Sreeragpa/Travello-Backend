@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import IAuth from "../../entities/auth.entity";
 
 const AuthSchema = new mongoose.Schema({
     email:{
@@ -32,4 +33,4 @@ const AuthSchema = new mongoose.Schema({
    
 })
 
-export const AuthModel = mongoose.model("Auth",AuthSchema)
+export const AuthModel = mongoose.model<IAuth>("Auth",AuthSchema)

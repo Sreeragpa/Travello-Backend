@@ -18,19 +18,25 @@ export class AuthUsecase implements IAuthUsecase {
 
     const payload = await verifyIdToken(data);
 
-    let user = await this.authRepository.emailAuth(payload.email as string);
+    let user = await this.authRepository.checkUser(payload.email as string);
     if (!user) {
       const data: IUser = { email: payload.email, userid: payload.email,password:null } as unknown as IUser
       await this.authRepository.create(data,true) as IUser;
-      user = await this.authRepository.emailAuth(payload.email as string);
+      user = await this.authRepository.checkUser(payload.email as string);
 
     }
-    const authData: IAuth = { email: payload.email } as IAuth;
+
+    if(user){
+      const authData: IAuth = { email: payload.email } as IAuth;
 
       const payloadJWT = { id: user._id, email: user.email, user_id: user.userid };
       const token = signJWT(payloadJWT, 8);
   
       return await this.authRepository.login(authData, token);
+    }else{
+      throw new Error(ErrorCode.RESOURCE_NOT_FOUND)
+    }
+
 
   }
 

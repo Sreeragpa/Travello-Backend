@@ -127,4 +127,9 @@ export class AuthRepository implements IAuthRepository {
         return token
     }
 
+    async checkUser(email:string): Promise<IAuth | null>{
+        const user = await AuthModel.findOne({ email: email });
+        return user 
+    }
+
 } 
