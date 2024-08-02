@@ -54,6 +54,8 @@ export class AuthController{
     }
     async googleSignin(req: Request, res: Response, next: NextFunction){
         try {    
+            console.log("IN Google AUth Controller");
+            
             const { idToken } = req.body;
             if(!idToken){
                 throw new Error("Missing Token")

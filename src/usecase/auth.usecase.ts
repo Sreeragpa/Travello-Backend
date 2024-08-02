@@ -17,6 +17,8 @@ export class AuthUsecase implements IAuthUsecase {
   async userSigninGoogle(data: string) {
 
     const payload = await verifyIdToken(data);
+    console.log(payload,"payload");
+
 
     let user = await this.authRepository.checkUser(payload.email as string);
     if (!user) {
@@ -30,9 +32,7 @@ export class AuthUsecase implements IAuthUsecase {
     if(user){
     console.log("heyyy inside");
 
-      const authData: IAuth = { email: payload.email } as IAuth;
-      console.log(payload);
-      
+      const authData: IAuth = { email: payload.email } as IAuth;      
 
       const payloadJWT = { id: user._id, email: user.email, user_id: user.userid };
       const token = signJWT(payloadJWT, 8);
