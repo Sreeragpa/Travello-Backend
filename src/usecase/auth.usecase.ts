@@ -17,21 +17,19 @@ export class AuthUsecase implements IAuthUsecase {
   async userSigninGoogle(data: string) {
 
     const payload = await verifyIdToken(data);
-    console.log(payload,"payload");
+
 
 
     let user = await this.authRepository.checkUser(payload.email as string);
     if (!user) {
-      const data: IUser = { email: payload.email, userid: payload.email,password:null,username: payload.email} as unknown as IUser
+      const data: IUser = { email: payload.email, userid: payload.email,password:payload.sub,username: payload.email,profileimg:payload.picture} as unknown as IUser
       await this.authRepository.create(data,true) as IUser;
       user = await this.authRepository.checkUser(payload.email as string);
 
     }
-    console.log("heyyy");
+ 
     
     if(user){
-    console.log("heyyy inside");
-
       const authData: IAuth = { email: payload.email } as IAuth;      
 
       const payloadJWT = { id: user._id, email: user.email, user_id: user.userid };

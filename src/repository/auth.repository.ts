@@ -39,7 +39,7 @@ export class AuthRepository implements IAuthRepository {
     }
     async changePassword(email: string, password: string): Promise<string> {
         try {
-            password = await bcrypt.hash(password,10)
+            password = await bcrypt.hash(password,10);
             await AuthModel.findOneAndUpdate({ email: email }, { $set: { password: password } })
             return "Password Changed Successfully"
         } catch (error) {
