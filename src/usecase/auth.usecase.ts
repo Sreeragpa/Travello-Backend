@@ -20,7 +20,7 @@ export class AuthUsecase implements IAuthUsecase {
 
     let user = await this.authRepository.checkUser(payload.email as string);
     if (!user) {
-      const data: IUser = { email: payload.email, userid: payload.email,password:null } as unknown as IUser
+      const data: IUser = { email: payload.email, userid: payload.email,password:null,username: payload.email} as unknown as IUser
       await this.authRepository.create(data,true) as IUser;
       user = await this.authRepository.checkUser(payload.email as string);
 
