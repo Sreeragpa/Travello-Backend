@@ -25,8 +25,11 @@ export class AuthUsecase implements IAuthUsecase {
       user = await this.authRepository.checkUser(payload.email as string);
 
     }
-
+    console.log("heyyy");
+    
     if(user){
+    console.log("heyyy inside");
+
       const authData: IAuth = { email: payload.email } as IAuth;
 
       const payloadJWT = { id: user._id, email: user.email, user_id: user.userid };
