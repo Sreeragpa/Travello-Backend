@@ -110,7 +110,7 @@ export class UserRepository implements IUserRepository{
         throw error
       }
     }
-    async addProfilePicture(userid: string ,img: string): Promise<any> {
+    async addProfilePicture(userid: string ,img: string): Promise<IUser | null> {
       try {
         const user = await UserModel.findOneAndUpdate({_id:userid},{$set:{profileimg:img}},{new: true})
         return user

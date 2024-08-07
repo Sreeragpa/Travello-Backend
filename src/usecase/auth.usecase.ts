@@ -14,7 +14,7 @@ export class AuthUsecase implements IAuthUsecase {
   constructor(authRepository: IAuthRepository) {
     this.authRepository = authRepository;
   }
-  async userSigninGoogle(data: string) {
+  async userSigninGoogle(data: string):Promise<string> {
 
     const payload = await verifyIdToken(data);
 
@@ -46,7 +46,7 @@ export class AuthUsecase implements IAuthUsecase {
   logoutUser(): string {
     throw new Error("Method not implemented.");
   }
-  async verifyResetPassword(email: string, otp: string, newpassword: string) {
+  async verifyResetPassword(email: string, otp: string, newpassword: string):Promise<string> {
     try {
       const data = await this.verifyOtp(email, otp);
       if (!data) {
@@ -58,7 +58,7 @@ export class AuthUsecase implements IAuthUsecase {
       throw error;
     }
   }
-  async resetPassword(email: string) {
+  async resetPassword(email: string): Promise<string> {
     try {
       // Sending OTP
       await this.sendOtpByEmail(email, "Travello:Reset Password");
@@ -67,7 +67,7 @@ export class AuthUsecase implements IAuthUsecase {
       throw error;
     }
   }
-  async sendOtpByEmail(email: string, subject: string) {
+  async sendOtpByEmail(email: string, subject: string):Promise<void> {
     try {
       // Generate OTP
       const otp = generateOTP(6);
@@ -79,7 +79,7 @@ export class AuthUsecase implements IAuthUsecase {
       throw new Error(ErrorCode.FAILED_SENDING_OTP);
     }
   }
-  async userSignin(data: IAuth) {
+  async userSignin(data: IAuth):Promise<string> {
     const user = await this.authRepository.emailAuth(data.email);
     const isMatch = await bcrypt.compare(data.password, user.password);
     if (!isMatch) {
@@ -102,7 +102,7 @@ export class AuthUsecase implements IAuthUsecase {
     return await this.authRepository.login(data, token);
   }
 
-  async userSignup(data: IUser) {
+  async userSignup(data: IUser):Promise<IUser> {
     try {
       const emailExists = await this.authRepository.checkEmailExists(
         data.email
@@ -135,10 +135,15 @@ export class AuthUsecase implements IAuthUsecase {
     }
   }
 
-  forgotPassword(email: string) {
-    throw new Error("Method not implemented.");
+  async forgotPassword(email: string) {
+    try {
+      await this.sendOtpByEmail(email,"Travello:Reset Password");
+      return "OTP Sent"
+    } catch (error) {
+      throw error
+    }
   }
-  async verifyOtp(email: string, otp: string) {
+  async verifyOtp(email: string, otp: string):Promise<string> {
     try {
       // Verifying OTP from OtpCollection
       const OtpVerfication = await this.authRepository.verifyOtp(email, otp);

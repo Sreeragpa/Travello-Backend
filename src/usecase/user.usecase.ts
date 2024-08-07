@@ -93,14 +93,16 @@ export class UserUsecase implements IUserUsecase {
             const uploadedImage = await this.cloudinaryService.uploadImage(img);
 
             const user = await this.userRepository.addProfilePicture(userid, uploadedImage)
-            return user
+            if(user){
+                return user 
+            }else{
+                throw new Error(ErrorCode.FAILED_UPDATING)
+            }
         } catch (error) {
             throw error
         }
     }
-    getUserPofile(username: string): IUser {
-        throw new Error("Method not implemented.");
-    }
+   
 
 
 }
