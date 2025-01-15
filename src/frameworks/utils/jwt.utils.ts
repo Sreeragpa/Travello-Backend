@@ -2,9 +2,10 @@ import * as jwt from "jsonwebtoken";
 const JWT_SECRET = process.env.JWT_SECRET || "test_secret";
 
 // Sign JWT
-export function signJWT(payload: object, expiresIn: string | number): string {
-    const accessToken = jwt.sign(payload, JWT_SECRET);
-    return accessToken;
+export function signJWT(payload: object, expiresIn: string | number): {accessToken: string,refreshToken: string} {
+    const accessToken = jwt.sign(payload, JWT_SECRET,{ expiresIn: '15m' });
+    const refreshToken = jwt.sign(payload, JWT_SECRET,{ expiresIn: '15m' });
+    return {accessToken,refreshToken};
 }
 
 // Verify JWT

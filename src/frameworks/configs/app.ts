@@ -31,7 +31,8 @@ app.use(express.urlencoded({ extended: false }));
 const allowedOrigins = [
   'http://localhost:4200', // Allow requests from Angular application on localhost
   'https://travello.srg.buzz',
-  'http://travello.srg.buzz'
+  'http://travello.srg.buzz',
+  'https://travello.srgweb.site',
 ];
 // Enable CORS 
 app.use(cors({

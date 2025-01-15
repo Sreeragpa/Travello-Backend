@@ -38,15 +38,29 @@ export class AuthController{
                 throw new Error("Missing Data (email or password")
             }
             const token = await this.authUsecase.userSignin(body);
-            // res.cookie('authToken', token, { httpOnly: true });
-            res.cookie('authToken', token, {
+            // Auth before Refresh Token
+            // res.cookie('authToken', token, {
+            //     httpOnly: true,
+            //     secure: true,  // Use true if you're serving over HTTPS
+            //     sameSite: 'none'  // Allows cross-site cookie usage
+            //   });
+
+            res.cookie('authToken', token.accessToken, {
                 httpOnly: true,
-                secure: true,  // Use true if you're serving over HTTPS
-                sameSite: 'none'  // Allows cross-site cookie usage
-              });
+                secure: true,
+                sameSite: 'strict',
+                maxAge: 15 * 60 * 1000 // 15 minutes
+            });
+
+            res.cookie('refreshToken', token.refreshToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
+                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+            });
 
             
-            res.status(200).json({ status: 'success', data: token });
+            res.status(200).json({ status: 'success', data: token.accessToken });
 
         } catch (error) {
             next(error)
@@ -61,15 +75,32 @@ export class AuthController{
                 throw new Error("Missing Token")
             }
             const token = await this.authUsecase.userSigninGoogle(idToken);
+            
             // res.cookie('authToken', token, { httpOnly: true });
-            res.cookie('authToken', token, {
+            // res.cookie('authToken', token, {
+            //     httpOnly: true,
+            //     secure: true,  // Use true if you're serving over HTTPS
+            //     sameSite: 'none'  // Allows cross-site cookie usage
+            //   });
+
+
+              res.cookie('authToken', token.accessToken, {
                 httpOnly: true,
-                secure: true,  // Use true if you're serving over HTTPS
-                sameSite: 'none'  // Allows cross-site cookie usage
-              });
+                secure: true,
+                sameSite: 'strict',
+                maxAge: 15 * 60 * 1000 // 15 minutes
+            });
+
+            res.cookie('refreshToken', token.refreshToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
+                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+            });
+
 
             
-            res.status(200).json({ status: 'success', data: token });
+            res.status(200).json({ status: 'success', data: token.accessToken });
 
         } catch (error) {
             next(error)

@@ -2,8 +2,8 @@ import IAuth from "../../entities/auth.entity"
 import IUser from "../../entities/user.entity"
 
 export interface IAuthUsecase{
-    userSignin(data:IAuth): Promise<string>
-    userSigninGoogle(data:string): Promise<string>
+    userSignin(data:IAuth): Promise<{accessToken: string,refreshToken:string}>
+    userSigninGoogle(data:string): Promise<{accessToken: string,refreshToken:string}>
     userSignup(data:IUser): Promise<IUser>
     forgotPassword(email: string): any
     verifyOtp(email: string, otp: string): Promise<string>

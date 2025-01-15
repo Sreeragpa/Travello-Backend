@@ -7,6 +7,7 @@ export interface IAdmin {
 export interface IAdminLogin{
     email: string,
     token: string,
+    refreshToken: string
 }
 
 export interface IJwtPayloadAdmin{

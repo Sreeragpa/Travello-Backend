@@ -74,7 +74,8 @@ export class AdminUsecase implements IAdminUsecase {
             const token = signJWT(payload, 8)
             const adminData: IAdminLogin = {
                 email: admin.email,
-                token: token
+                token: token.accessToken,
+                refreshToken: token.refreshToken
             }
 
             return adminData

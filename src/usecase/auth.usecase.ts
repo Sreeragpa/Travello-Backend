@@ -14,7 +14,7 @@ export class AuthUsecase implements IAuthUsecase {
   constructor(authRepository: IAuthRepository) {
     this.authRepository = authRepository;
   }
-  async userSigninGoogle(data: string):Promise<string> {
+  async userSigninGoogle(data: string):Promise<{accessToken: string,refreshToken:string}> {
 
     const payload = await verifyIdToken(data);
 
@@ -35,7 +35,8 @@ export class AuthUsecase implements IAuthUsecase {
       const payloadJWT = { id: user._id, email: user.email, user_id: user.userid };
       const token = signJWT(payloadJWT, 8);
   
-      return await this.authRepository.login(authData, token);
+       await this.authRepository.login(authData, token.refreshToken);
+       return token
     }else{
       throw new Error(ErrorCode.RESOURCE_NOT_FOUND)
     }
@@ -79,27 +80,32 @@ export class AuthUsecase implements IAuthUsecase {
       throw new Error(ErrorCode.FAILED_SENDING_OTP);
     }
   }
-  async userSignin(data: IAuth):Promise<string> {
-    const user = await this.authRepository.emailAuth(data.email);
-    const isMatch = await bcrypt.compare(data.password, user.password);
-    if (!isMatch) {
-      throw new Error(ErrorCode.INVALID_CREDENTIALS);
-    }
-    // Checking Whether Account is created using Google Auth
-    if(user.isGoogleAuth){
+  async userSignin(data: IAuth):Promise<{accessToken: string,refreshToken:string}> {
+    try {
+      const user = await this.authRepository.emailAuth(data.email);
+      const isMatch = await bcrypt.compare(data.password, user.password);
+      if (!isMatch) {
+        throw new Error(ErrorCode.INVALID_CREDENTIALS);
+      }
+      // Checking Whether Account is created using Google Auth
+      if(user.isGoogleAuth){
+        throw new Error(ErrorCode.SIGN_IN_WITH_GOOGLE);
+      }
+      const isUserVerified = await this.authRepository.checkUserVerified(
+        data.email
+      );
+      if (!isUserVerified) {
+        await this.sendOtpByEmail(data.email, "Travello:Verify Account");
+        throw new Error(ErrorCode.USER_NOT_VERIFIED);
+      }
+      const payload = { id: user._id, email: user.email, user_id: user.userid };
+      const token = signJWT(payload, 8);
+  
+      await this.authRepository.login(data, token.refreshToken);
+      return token
+    } catch (error) {
       throw new Error(ErrorCode.SIGN_IN_WITH_GOOGLE);
     }
-    const isUserVerified = await this.authRepository.checkUserVerified(
-      data.email
-    );
-    if (!isUserVerified) {
-      await this.sendOtpByEmail(data.email, "Travello:Verify Account");
-      throw new Error(ErrorCode.USER_NOT_VERIFIED);
-    }
-    const payload = { id: user._id, email: user.email, user_id: user.userid };
-    const token = signJWT(payload, 8);
-
-    return await this.authRepository.login(data, token);
   }
 
   async userSignup(data: IUser):Promise<IUser> {

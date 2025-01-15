@@ -8,8 +8,8 @@ export default function initializeSocketIO(server: HttpServer) {
       origin: [
         'http://localhost:4200',
          'https://travello.srg.buzz',
-        'http://travello.srg.buzz'
-        
+        'http://travello.srg.buzz',
+        'https://travello.srgweb.site',
       ],
       methods: ["GET", "POST"],
       credentials: true

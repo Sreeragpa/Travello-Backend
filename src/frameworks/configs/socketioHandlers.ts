@@ -22,7 +22,7 @@ export default function setupSocketHandlers(io: Server) {
     console.log("A user connected");
 
 
-    const token = socket.handshake.auth.token;
+    const token = socket.handshake.auth.token;  
 
     const decoded = verifyJWT(token);
     socket.data.user = decoded as IJwtPayload;

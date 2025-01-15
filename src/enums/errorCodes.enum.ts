@@ -10,6 +10,7 @@ export enum ErrorCode {
     USER_NOT_VERIFIED = 'USER_NOT_VERIFIED',
     INVALID_ADMIN_EMAIL = 'INVALID_ADMIN_EMAIL',
     SIGN_IN_WITH_GOOGLE = 'SIGN_IN_WITH_GOOGLE',
+    SIGN_IN_ERROR = 'SIGN_IN_ERROR',
 
     // Validation errors
     VALIDATION_ERROR = 'VALIDATION_ERROR', // Request data validation failed
