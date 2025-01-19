@@ -13,7 +13,7 @@ export interface IUserUsecase{
 
 
 
-export interface IJwtPayload{
+export interface    IJwtPayload{
     id: string,
     user_id: string
 }

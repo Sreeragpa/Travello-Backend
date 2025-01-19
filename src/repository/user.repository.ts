@@ -8,6 +8,18 @@ import { IStatisticsData } from "../entities/admin.entity";
 export interface IUserData extends Document{}
 
 export class UserRepository implements IUserRepository{
+    async getUsername(userid: string): Promise<{ username: string; }> {
+     try {
+      const user = await UserModel.findOne({ _id: userid }, { username: 1 });
+      if (!user) {
+        throw new Error(`User with id ${userid} not found.`);
+      }
+      return { username: user.username };
+     } catch (error) {
+      throw error
+     }
+    }
+
     async blockUser(userid: string): Promise<IUser> {
       const user = await UserModel.findOneAndUpdate({_id: userid},{$set:{isBlocked: true}});
       if (!user) {

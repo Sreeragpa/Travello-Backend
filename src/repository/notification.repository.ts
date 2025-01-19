@@ -21,7 +21,7 @@ export class NotificationRepository implements INotificationRepository {
                 tripid: data.tripid
             })
             const savedNotification = await newNotification.save();
-            return savedNotification
+            return savedNotification.toJSON()
         } catch (error) {
             throw error
         }

@@ -11,6 +11,7 @@ export interface IAuthUsecase{
     resetPassword(email: string): Promise<string>
     verifyResetPassword(email: string,otp: string, newpassword: string): Promise<string>
     logoutUser(): string
+    getAuth(email: string): Promise<IAuth>
 }
 
 export interface IRegisterInput {

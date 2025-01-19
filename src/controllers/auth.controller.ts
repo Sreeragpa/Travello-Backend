@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { IAuthUsecase } from "../interfaces/usecase/IAuth.usecase";
+import { ErrorCode } from "../enums/errorCodes.enum";
 
 export class AuthController{
     private authUsecase: IAuthUsecase;

@@ -10,6 +10,7 @@ import { NotificationRepository } from "../../repository/notification.repository
 import { NotificationUsecase } from "../../usecase/notification.usecase";
 import { io } from "../../server";
 import { userSocketMap } from "../configs/socketioHandlers";
+import { UserRepository } from "../../repository/user.repository";
 
 const cloudinaryService = new CloudinaryService();
 const router = express.Router();
@@ -17,7 +18,8 @@ const postRepository = new PostRepository();
 const followRepostory = new FollowRepository();
 const commentRepository = new CommentRepository();
 const notificationRepository = new NotificationRepository();
-const notificationUsecase = new NotificationUsecase(notificationRepository)
+const userRepository = new UserRepository();
+const notificationUsecase = new NotificationUsecase(notificationRepository,userRepository)
 
 const postUsecase = new PostUsecase(postRepository,cloudinaryService,followRepostory,commentRepository,notificationUsecase);
 const postController = new PostController(postUsecase);

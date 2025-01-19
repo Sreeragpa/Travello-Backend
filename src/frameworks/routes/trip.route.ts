@@ -8,13 +8,15 @@ import { FollowRepository } from "../../repository/follow.repository";
 import { NotificationRepository } from "../../repository/notification.repository";
 import { NotificationUsecase } from "../../usecase/notification.usecase";
 import { ConversationRepository } from "../../repository/conversation.repository";
+import { UserRepository } from "../../repository/user.repository";
 
 const router = express.Router();
 const clodinaryService = new CloudinaryService();
 const tripRepository = new TripRepository();
 const followRepository = new FollowRepository()
-const notificationRepository = new NotificationRepository()
-const notificationUsecase = new NotificationUsecase(notificationRepository)
+const notificationRepository = new NotificationRepository();
+const userRepository = new UserRepository()
+const notificationUsecase = new NotificationUsecase(notificationRepository,userRepository)
 const conversationRepository = new ConversationRepository()
 
 const tripUsecase = new TripUsecase(tripRepository,clodinaryService,followRepository,notificationUsecase,conversationRepository);

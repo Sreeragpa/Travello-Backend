@@ -27,13 +27,16 @@ export default function setupSocketHandlers(io: Server) {
     const decoded = verifyJWT(token);
     socket.data.user = decoded as IJwtPayload;
 
-    const user = socket?.data?.user ;
+    const user = socket?.data?.user as any ;
+    // if(!user)return 
     console.log(user, "User from Socket");
 
-    userSocketMap[user.user_id] = socket.id;
-    const userId = socket.data.user.id;
+    const userId = socket.data.user?.id;
+    if(userId){
+      userSocketMap[user?.user_id] = socket.id;
+      socket.join(userId);
+    }
     
-    socket.join(userId);
 
 
     // Handle socket events
@@ -59,7 +62,9 @@ export default function setupSocketHandlers(io: Server) {
 
     socket.on("disconnect", () => {
       console.log("user disconnected");
-      delete userSocketMap[user.user_id];
+      if(user?.user_id){
+        delete userSocketMap[user.user_id];
+      }
     });
   });
 

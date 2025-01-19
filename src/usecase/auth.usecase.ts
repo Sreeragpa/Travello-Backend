@@ -14,6 +14,15 @@ export class AuthUsecase implements IAuthUsecase {
   constructor(authRepository: IAuthRepository) {
     this.authRepository = authRepository;
   }
+
+  async getAuth(email: string): Promise<IAuth> {
+    try {
+      const auth = await this.authRepository.emailAuth(email);
+      return auth
+    } catch (error) {
+      throw error
+    }
+  }
   async userSigninGoogle(data: string):Promise<{accessToken: string,refreshToken:string}> {
 
     const payload = await verifyIdToken(data);
@@ -62,6 +71,8 @@ export class AuthUsecase implements IAuthUsecase {
   async resetPassword(email: string): Promise<string> {
     try {
       // Sending OTP
+      const user = await this.getAuth(email);
+      if(!user)throw new Error(ErrorCode.USER_NOT_FOUND)
       await this.sendOtpByEmail(email, "Travello:Reset Password");
       return "OTP Sent Successfully";
     } catch (error) {
@@ -88,7 +99,7 @@ export class AuthUsecase implements IAuthUsecase {
         throw new Error(ErrorCode.INVALID_CREDENTIALS);
       }
       // Checking Whether Account is created using Google Auth
-      if(user.isGoogleAuth){
+      if(user.isGoogleAuth && !user.password){
         throw new Error(ErrorCode.SIGN_IN_WITH_GOOGLE);
       }
       const isUserVerified = await this.authRepository.checkUserVerified(
@@ -104,7 +115,7 @@ export class AuthUsecase implements IAuthUsecase {
       await this.authRepository.login(data, token.refreshToken);
       return token
     } catch (error) {
-      throw new Error(ErrorCode.SIGN_IN_WITH_GOOGLE);
+      throw error
     }
   }
 

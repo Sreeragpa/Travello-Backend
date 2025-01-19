@@ -12,7 +12,7 @@ export interface IUserRepository{
     getAllUser(): Promise<IUser[]>
     blockUser(userid: string): Promise<IUser>
     unBlockUser(userid: string): Promise<IUser>
-
+    getUsername(userid: string): Promise<{username: string}>
 }   
 
 export interface ILikedUser{

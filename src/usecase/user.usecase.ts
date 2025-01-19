@@ -18,6 +18,7 @@ export class UserUsecase implements IUserUsecase {
         this.authRepository = authRepository
         this.followRepository = followRepository
     }
+    
     async searchUser(userid: string,searchKey: string): Promise<IUser[]> {
        try {
         let searchResults = await this.userRepository.searchUser(searchKey);

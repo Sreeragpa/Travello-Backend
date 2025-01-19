@@ -4,13 +4,17 @@ import { INotificationUsecase } from "../interfaces/usecase/INotification.usecas
 
 import { io } from "../server";
 import { userSocketMap } from "../frameworks/configs/socketioHandlers";
+import { IUserRepository } from "../interfaces/repositories/IUser.repository";
 
 export class NotificationUsecase implements INotificationUsecase {
   private notificationRepository: INotificationRepository;
+  private userRepository: IUserRepository;
   constructor(
-    notificationRepository: INotificationRepository
+    notificationRepository: INotificationRepository,
+    userRepository: IUserRepository
   ) {
     this.notificationRepository = notificationRepository;
+    this.userRepository = userRepository
   }
     async getNotificationCount(userid: string): Promise<number> {
         const notificationCount = await this.notificationRepository.countByUserid(userid);
@@ -27,13 +31,17 @@ export class NotificationUsecase implements INotificationUsecase {
   async createNotification(data: INotification): Promise<INotification> {
     try {
       const notification = await this.notificationRepository.create(data);
+      
 
     //   Socketio Notification to the recieved User
         const followedUserSocketId = userSocketMap[data.recipient];
+        const {username} = await this.userRepository.getUsername(data.sender);
+        const notificationdata:any = {...notification, username}
+        
       if (followedUserSocketId) {
         io.to(followedUserSocketId).emit("notification", {
           success: true,
-          data: notification,
+          data: notificationdata,
         });
       }
       

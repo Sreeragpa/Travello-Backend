@@ -7,11 +7,13 @@ import { NotificationRepository } from "../../repository/notification.repository
 import { NotificationUsecase } from "../../usecase/notification.usecase"
 import { io } from "../../server";
 import { userSocketMap } from "../configs/socketioHandlers";
+import { UserRepository } from "../../repository/user.repository";
 
 const router = express.Router();
 const followRepository = new FollowRepository();
-const notificationRepository = new NotificationRepository()
-const notificationUsecase = new NotificationUsecase(notificationRepository)
+const notificationRepository = new NotificationRepository();
+const userRepository = new UserRepository();
+const notificationUsecase = new NotificationUsecase(notificationRepository,userRepository)
 const followUsecase = new FollowUsecase(followRepository,notificationUsecase);
 const followController = new FollowController(followUsecase);
 
