@@ -147,11 +147,17 @@ export class AuthController{
             sameSite: 'none',
             expires: new Date(0), // Set expiration date to the past
           });
+          res.cookie('refreshToken', '', {
+            httpOnly: true,
+            secure: true, // Use true if you're serving over HTTPS
+            sameSite: 'none',
+            expires: new Date(0), // Set expiration date to the past
+          });
         res.status(200).json({status:"success",data:"Logged out successfully"})
     }
 
     async getToken(req: Request, res: Response, next: NextFunction){
-        const token = req.cookies.authToken; // Adjust this based on how your token is sent
+        const token = req.cookies.authToken; 
 
     if (!token) {
       return res.status(401).json({ message: 'Token not found' });
