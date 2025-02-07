@@ -144,13 +144,13 @@ export class AuthController{
         res.cookie('authToken', '', {
             httpOnly: true,
             secure: true, // Use true if you're serving over HTTPS
-            sameSite: 'none',
+            sameSite: 'strict',
             expires: new Date(0), // Set expiration date to the past
           });
           res.cookie('refreshToken', '', {
             httpOnly: true,
             secure: true, // Use true if you're serving over HTTPS
-            sameSite: 'none',
+            sameSite: 'strict',
             expires: new Date(0), // Set expiration date to the past
           });
         res.status(200).json({status:"success",data:"Logged out successfully"})
