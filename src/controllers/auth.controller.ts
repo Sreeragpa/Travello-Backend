@@ -43,20 +43,20 @@ export class AuthController{
             // res.cookie('authToken', token, {
             //     httpOnly: true,
             //     secure: true,  // Use true if you're serving over HTTPS
-            //     sameSite: 'none'  // Allows cross-site cookie usage
+            //     sameSite: 'strict'  // Allows cross-site cookie usage
             //   });
 
             res.cookie('authToken', token.accessToken, {
                 httpOnly: true,
                 secure: true,
-                sameSite: 'none',
+                sameSite: 'strict',
                 maxAge: 15 * 60 * 1000 // 15 minutes
             });
 
             res.cookie('refreshToken', token.refreshToken, {
                 httpOnly: true,
                 secure: true,
-                sameSite: 'none',
+                sameSite: 'strict',
                 maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
             });
 
@@ -81,21 +81,21 @@ export class AuthController{
             // res.cookie('authToken', token, {
             //     httpOnly: true,
             //     secure: true,  // Use true if you're serving over HTTPS
-            //     sameSite: 'none'  // Allows cross-site cookie usage
+            //     sameSite: 'strict'  // Allows cross-site cookie usage
             //   });
 
 
               res.cookie('authToken', token.accessToken, {
                 httpOnly: true,
                 secure: true,
-                sameSite: 'none',
+                sameSite: 'strict',
                 maxAge: 15 * 60 * 1000 // 15 minutes
             });
 
             res.cookie('refreshToken', token.refreshToken, {
                 httpOnly: true,
                 secure: true,
-                sameSite: 'none',
+                sameSite: 'strict',
                 maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
             });
 
@@ -144,13 +144,13 @@ export class AuthController{
         res.cookie('authToken', '', {
             httpOnly: true,
             secure: true, // Use true if you're serving over HTTPS
-            sameSite: 'none',
+            sameSite: 'strict',
             expires: new Date(0), // Set expiration date to the past
           });
           res.cookie('refreshToken', '', {
             httpOnly: true,
             secure: true, // Use true if you're serving over HTTPS
-            sameSite: 'none',
+            sameSite: 'strict',
             expires: new Date(0), // Set expiration date to the past
           });
 
