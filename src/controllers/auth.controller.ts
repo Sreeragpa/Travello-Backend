@@ -153,6 +153,10 @@ export class AuthController{
             sameSite: 'strict',
             expires: new Date(0), // Set expiration date to the past
           });
+
+          res.clearCookie("authToken", { httpOnly: true, secure: true, sameSite: "strict" });
+          res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: "strict" });
+
         res.status(200).json({status:"success",data:"Logged out successfully"})
     }
 
