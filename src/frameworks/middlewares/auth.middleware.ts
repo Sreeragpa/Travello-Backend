@@ -33,42 +33,42 @@ export const authMiddleware = async (
     
 
     // If access token is invalid, use the refresh token
-    // if (!userData && refreshToken) {
-    //   const refreshTokenData = await verifyJWT<IJwtPayload>(refreshToken) as IJwtPayload;
+    if (!userData && refreshToken) {
+      const refreshTokenData = await verifyJWT<IJwtPayload>(refreshToken) as IJwtPayload;
 
-    //   console.log(refreshTokenData,"REFREEDATATA");
+      console.log(refreshTokenData,"REFREEDATATA");
       
 
-    //   if (!refreshTokenData) {
-    //     return res
-    //       .status(401)
-    //       .json({ message: "Unauthorized: Invalid refresh token" });
-    //   }
+      if (!refreshTokenData) {
+        return res
+          .status(401)
+          .json({ message: "Unauthorized: Invalid refresh token" });
+      }
 
-    //   userData = refreshTokenData;
+      userData = refreshTokenData;
 
-    //   // Issue a new access token
-    //   const payload = {
-    //     id: userData.id,
-    //     email: userData.email,
-    //     user_id: userData.user_id,
-    //   };
-    //   const token = signJWT(payload, 15);
+      // Issue a new access token
+      const payload = {
+        id: userData.id,
+        email: userData.email,
+        user_id: userData.user_id,
+      };
+      const token = signJWT(payload, 15);
 
-    //   // Send new tokens to the client
-    //   res.cookie("authToken", token.accessToken, {
-    //     httpOnly: true,
-    //     secure: true,
-    //     sameSite: "none",
-    //     maxAge: 15 * 60 * 1000 // 15 minutes
-    //   });
-    //   res.cookie("refreshToken", token.refreshToken, {
-    //     httpOnly: true,
-    //     secure: true,
-    //     sameSite: "none",
-    //     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // Expires in 7 days
-    //   });
-    // }
+      // Send new tokens to the client
+      res.cookie("authToken", token.accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: 15 * 60 * 1000 // 15 minutes
+      });
+      res.cookie("refreshToken", token.refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // Expires in 7 days
+      });
+    }
 
     // If no valid token is found, return unauthorized
     if (!userData) {
