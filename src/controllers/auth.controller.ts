@@ -49,14 +49,14 @@ export class AuthController{
             res.cookie('authToken', token.accessToken, {
                 httpOnly: true,
                 secure: true,
-                sameSite: 'strict',
+                sameSite: 'none',
                 maxAge: 15 * 60 * 1000 // 15 minutes
             });
 
             res.cookie('refreshToken', token.refreshToken, {
                 httpOnly: true,
                 secure: true,
-                sameSite: 'strict',
+                sameSite: 'none',
                 maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
             });
 
@@ -88,14 +88,14 @@ export class AuthController{
               res.cookie('authToken', token.accessToken, {
                 httpOnly: true,
                 secure: true,
-                sameSite: 'strict',
+                sameSite: 'none',
                 maxAge: 15 * 60 * 1000 // 15 minutes
             });
 
             res.cookie('refreshToken', token.refreshToken, {
                 httpOnly: true,
                 secure: true,
-                sameSite: 'strict',
+                sameSite: 'none',
                 maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
             });
 
@@ -144,18 +144,18 @@ export class AuthController{
         res.cookie('authToken', '', {
             httpOnly: true,
             secure: true, // Use true if you're serving over HTTPS
-            sameSite: 'strict',
+            sameSite: 'none',
             expires: new Date(0), // Set expiration date to the past
           });
           res.cookie('refreshToken', '', {
             httpOnly: true,
             secure: true, // Use true if you're serving over HTTPS
-            sameSite: 'strict',
+            sameSite: 'none',
             expires: new Date(0), // Set expiration date to the past
           });
 
-          res.clearCookie("authToken", { httpOnly: true, secure: true, sameSite: "strict" });
-          res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: "strict" });
+          res.clearCookie("authToken", { httpOnly: true, secure: true, sameSite: "none" });
+            res.clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: "none" });
 
         res.status(200).json({status:"success",data:"Logged out successfully"})
     }

@@ -59,13 +59,13 @@ export const authMiddleware = async (
       res.cookie("authToken", token.accessToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "strict",
+        sameSite: "none",
         maxAge: 15 * 60 * 1000 // 15 minutes
       });
       res.cookie("refreshToken", token.refreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "strict",
+        sameSite: "none",
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // Expires in 7 days
       });
     }
