@@ -15,6 +15,7 @@ import notificationRouter from "../routes/notification.route"
 import conversationRouter from "../routes/conversation.route"
 import messageRouter from "../routes/message.route"
 import adminRouter from "../routes/admin.route"
+import aiRouter from "../routes/ai.route"
 
 
 // Initialize Express application
@@ -69,6 +70,8 @@ app.use('/api/conversation', conversationRouter);
 app.use('/api/message', messageRouter);
 // Admin Routes
 app.use('/api/admin', adminRouter);
+// AI Routes
+app.use('/api/ai', aiRouter);
 
 // Unknown Route
 app.all("*", (req: Request, res: Response, next: NextFunction) => {

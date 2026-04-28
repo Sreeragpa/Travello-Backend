@@ -1,11 +1,13 @@
 import app from "./frameworks/configs/app";
 import connectDb from "./frameworks/configs/db";
+import { connectQdrant } from "./frameworks/configs/qdrant";
 import {createServer} from "http"
 import initializeSocketIO from "./frameworks/configs/socketio";
 
 
 // Connect Database
 connectDb();
+connectQdrant();
 
 // Create HTTP server and attach Express app to it
 const server = createServer(app);

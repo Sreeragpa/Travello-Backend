@@ -67,6 +67,10 @@ const tripSchema = new mongoose.Schema({
       type: String,
       required: true
     },
+    tags: {
+      type: [String],
+      default: []
+    },
     imageUrl: String
   },{timestamps:true});
   

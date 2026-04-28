@@ -5,6 +5,20 @@ import { ITripRepository, IUserLocation } from "../interfaces/repositories/ITrip
 import { IStatisticsData } from "../entities/admin.entity";
 
 export class TripRepository implements ITripRepository {
+  async findByIds(tripIds: string[]): Promise<ITrip[]> {
+    if (!tripIds?.length) return [];
+
+    const objectIds = tripIds
+      .filter(Boolean)
+      .map((id) => new mongoose.Types.ObjectId(id));
+
+    const trips = await TripModel.find({ _id: { $in: objectIds } });
+    const byId = new Map(trips.map((t) => [String((t as any)._id), t]));
+
+    // Preserve semantic rank ordering
+    return tripIds.map((id) => byId.get(String(id))).filter(Boolean) as ITrip[];
+  }
+
   async getTripsCountByDate(days: number): Promise<IStatisticsData[]> {
     let matchStage = {};
 
@@ -408,6 +422,7 @@ export class TripRepository implements ITripRepository {
         endDate: data.endDate,
         memberlimit: data.memberlimit,
         description: data.description,
+        tags: data.tags || [],
         imageUrl: data.imageUrl,
         members: data.members,
       });

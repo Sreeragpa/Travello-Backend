@@ -5,6 +5,7 @@ import { IStatisticsData } from "../../entities/admin.entity";
 
 export interface ITripRepository{
     create(data: ITrip): Promise<ITrip>
+    findByIds(tripIds: string[]): Promise<ITrip[]>
     findTripsbyCreatorid(userid: string, creator_id:mongoose.Types.ObjectId[],page: number,limit: number):Promise<ITrip[]>
     hasUserJoinedTrip(userId: string, tripId: string): Promise<boolean>;
     addMember(memberid: string,tripid: string): Promise<ITrip>

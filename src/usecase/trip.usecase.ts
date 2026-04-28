@@ -8,6 +8,7 @@ import { INotification } from "../entities/notification.entity";
 import { ErrorCode } from "../enums/errorCodes.enum";
 import { INotificationUsecase } from "../interfaces/usecase/INotification.usecase";
 import { IConversationRepository } from "../interfaces/repositories/IConversation.repositories";
+import { searchTripIdsByText, upsertTripVector } from "../frameworks/utils/tripVectorStore";
 
 export class TripUsecase implements ITripUsecase {
   private tripRepository: ITripRepository;
@@ -41,6 +42,13 @@ export class TripUsecase implements ITripUsecase {
       }
       const updatedTrip = await this.tripRepository.findOneandUpdate(userid,tripid,updateFields);
       if(updatedTrip){
+        if (updateFields.description || updateFields.title) {
+          try {
+            await upsertTripVector(updatedTrip as any);
+          } catch (e) {
+            // best-effort only
+          }
+        }
         return updatedTrip
       }else{
         throw new Error(ErrorCode.FAILED_UPDATING)
@@ -163,6 +171,13 @@ export class TripUsecase implements ITripUsecase {
       }
       const createdTrip = await this.tripRepository.create(data);
       if(createdTrip){
+        // Best-effort: index trip for semantic search
+        try {
+          await upsertTripVector(createdTrip as any);
+        } catch (e) {
+          // best-effort only
+        }
+
         const newGroupConversation = await this.conversationRepository.createGroupConversation([data.creator_id],data.title);
         await this.tripRepository.addConversationIdtoTrip(createdTrip._id as string,newGroupConversation._id as string)
       }

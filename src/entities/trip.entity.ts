@@ -21,6 +21,7 @@ export interface ITrip {
     members: string[];
     memberlimit: number     
     description: string;
+    tags?: string[];
     imageUrl?: string;
     issameuser?: boolean;
     isuserjoined?: boolean;
@@ -36,4 +37,5 @@ export interface ITrip {
     imageUrl?: string;
     memberlimit?: number;
     description?: string;
+    tags?: string[];
   }
