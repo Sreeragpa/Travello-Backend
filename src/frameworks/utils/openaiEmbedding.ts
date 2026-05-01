@@ -3,15 +3,32 @@ import OpenAI from "openai";
 // ---------------- CONFIG ----------------
 
 function getOpenAIKey() {
-  return process.env.openAIKey || process.env.OPENAI_API_KEY || null;
+  return process.env.GEMINI_API_KEY_2 || process.env.OPENAI_API_KEY || process.env.openAIKey || null;
 }
 
-const defaultEmbeddingModel =
-  process.env.OPENAI_EMBED_MODEL || "text-embedding-3-small";
+export const defaultEmbeddingModel =
+  process.env.OPENAI_EMBED_MODEL ||
+  (process.env.GEMINI_API_KEY_2 ? "gemini-embedding-001" : "text-embedding-3-small");
+
+const embeddingDimensionsByModel: Record<string, number> = {
+  "gemini-embedding-001": 3072,
+  "text-embedding-3-small": 1536,
+  "text-embedding-3-large": 3072,
+};
+
+export function getExpectedEmbeddingDimensions(model = defaultEmbeddingModel): number {
+  return embeddingDimensionsByModel[model] || 1536;
+}
 
 // ✅ Create client once
+// const apiKey = getOpenAIKey();
+// const client = apiKey ? new OpenAI({ apiKey }) : null;
+// ✅ Create client once, pointing to Google's OpenAI-compatible endpoint
 const apiKey = getOpenAIKey();
-const client = apiKey ? new OpenAI({ apiKey }) : null;
+const client = apiKey ? new OpenAI({ 
+  apiKey: apiKey,
+  baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/" // The magic bridge!
+}) : null;
 
 // ---------------- SIMPLE CACHE ----------------
 
@@ -44,6 +61,7 @@ export async function generateEmbedding(
   if (embeddingCache.has(text)) {
     return embeddingCache.get(text)!;
   }
+  console.log("Generating embedding for:", text);
 
   try {
     const resp = await client.embeddings.create({
@@ -52,6 +70,7 @@ export async function generateEmbedding(
     });
 
     const vector = resp.data?.[0]?.embedding;
+    console.log("Embedding generated:", vector);
 
     if (Array.isArray(vector)) {
       // ✅ Store in cache

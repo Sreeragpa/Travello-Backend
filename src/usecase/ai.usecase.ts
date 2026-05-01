@@ -10,10 +10,12 @@ dotenv.config();
 // ---------------- CONFIG ----------------
 
 function getOpenAIKey() {
+  return process.env.GEMINI_API_KEY_2 || null;
   return process.env.OPENAI_API_KEY || process.env.openAIKey || null;
 }
 
-const chatModel = process.env.OPENAI_CHAT_MODEL || "gpt-4o";
+// const chatModel = process.env.OPENAI_CHAT_MODEL || "gpt-4o";
+const chatModel = "gemini-2.5-flash";
 
 const SYSTEM_PROMPT = `
 You are Travello's AI travel assistant.
@@ -78,7 +80,7 @@ async function rapidApiChat(prompt: string): Promise<string | null> {
 // ---------------- MAIN USECASE ----------------
 
 export class AiUsecase implements IAiUsecase {
-  constructor(private tripRepository: ITripRepository) {}
+  constructor(private tripRepository: ITripRepository) { }
 
   async tripChat(
     message: string,
@@ -121,16 +123,16 @@ export class AiUsecase implements IAiUsecase {
       trips.length === 0
         ? "No matching trips found."
         : `Available trips:\n\n${trips
-            .map((t, idx) => {
-              return `${idx + 1}.
+          .map((t, idx) => {
+            return `${idx + 1}.
 tripId: ${t._id}
 title: ${t.title}
 from: ${t.startingPoint?.name}
 to: ${t.destination?.name}
 description: ${(t.description || "").slice(0, 180)}
 tags: ${t.tags?.join(", ") || "none"}`;
-            })
-            .join("\n\n")}`;
+          })
+          .join("\n\n")}`;
 
     // ---------------- PROMPT ----------------
     const userPrompt = `
@@ -144,7 +146,11 @@ User request: ${userMessage}
 
     if (apiKey) {
       try {
-        const client = new OpenAI({ apiKey });
+        // const client = new OpenAI({ apiKey });
+        const client = new OpenAI({ 
+          apiKey: apiKey,
+          baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/" // The magic bridge!
+        });
 
         const resp = await client.chat.completions.create({
           model: chatModel,
