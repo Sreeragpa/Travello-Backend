@@ -9,6 +9,24 @@ type SearchOptions = {
   radius?: number;
 };
 
+function toGeoPoint(
+  location?: { lat?: number; lng?: number }
+): { lat: number; lon: number } | undefined {
+  if (
+    location?.lat === undefined ||
+    location?.lng === undefined ||
+    !Number.isFinite(location.lat) ||
+    !Number.isFinite(location.lng)
+  ) {
+    return undefined;
+  }
+
+  return {
+    lat: location.lat,
+    lon: location.lng,
+  };
+}
+
 export async function upsertTripVector(trip: ITrip): Promise<boolean> {
   if (!trip?._id) return false;
 
@@ -19,7 +37,7 @@ export async function upsertTripVector(trip: ITrip): Promise<boolean> {
   const collection = getTripCollectionName();
   const id = String(trip._id);
   const startingPoint = getGeoPoint(trip.startingPoint);
-  const destination = getGeoPoint(trip.destination);
+  const location = toGeoPoint(startingPoint);
 
   await qdrantClient.upsert(collection, {
     wait: true,
@@ -32,10 +50,7 @@ export async function upsertTripVector(trip: ITrip): Promise<boolean> {
           creatorId: String(trip.creator_id),
           title: trip.title,
           description: trip.description,
-          startingLat: startingPoint.lat,
-          startingLng: startingPoint.lng,
-          destinationLat: destination.lat,
-          destinationLng: destination.lng,
+          ...(location ? { location } : {}),
           destinationName: trip.destination?.name,
           startingPointName: trip.startingPoint?.name,
           startDate: trip.startDate,
@@ -60,22 +75,18 @@ export async function searchTripIdsByText(
   let filter: any = undefined;
 
   if (options?.lat !== undefined && options?.lng !== undefined) {
-    const range = options.radius || 1;
+    const radiusInMeters = (options.radius || 30) * 1000;
 
     filter = {
       must: [
         {
-          key: "startingLat",
-          range: {
-            gte: options.lat - range,
-            lte: options.lat + range,
-          },
-        },
-        {
-          key: "startingLng",
-          range: {
-            gte: options.lng - range,
-            lte: options.lng + range,
+          key: "location",
+          geo_radius: {
+            center: {
+              lat: options.lat,
+              lon: options.lng,
+            },
+            radius: radiusInMeters,
           },
         },
       ],

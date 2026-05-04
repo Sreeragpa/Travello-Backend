@@ -53,8 +53,8 @@ export class AuthUsecase implements IAuthUsecase {
 
   }
 
-  logoutUser(): string {
-    throw new Error("Method not implemented.");
+  async logoutUser(refreshToken?: string): Promise<string> {
+    return this.authRepository.logout(refreshToken);
   }
   async verifyResetPassword(email: string, otp: string, newpassword: string):Promise<string> {
     try {

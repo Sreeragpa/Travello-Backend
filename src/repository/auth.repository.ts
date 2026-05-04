@@ -18,8 +18,17 @@ export class AuthRepository implements IAuthRepository {
         }
         
     }
-    logout(): Promise<string> {
-        throw new Error("Method not implemented.");
+    async logout(refreshToken?: string): Promise<string> {
+        if (!refreshToken) {
+            return "Logged out successfully";
+        }
+
+        await AuthModel.updateOne(
+            { token: refreshToken },
+            { $pull: { token: refreshToken } }
+        );
+
+        return "Logged out successfully";
     }
     async verifyUserAccount(email: string): Promise<IAuth | null> {
         try {

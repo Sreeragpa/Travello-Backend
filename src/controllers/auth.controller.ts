@@ -141,21 +141,24 @@ export class AuthController {
     }
 
     async logout(req: Request, res: Response, next: NextFunction) {
-        res.cookie('authToken', '', {
-            httpOnly: true,
-            secure: true, // Use true if you're serving over HTTPS
-            sameSite: 'strict',
-            expires: new Date(0), // Set expiration date to the past
-        });
-        res.cookie('refreshToken', '', {
-            httpOnly: true,
-            secure: true, // Use true if you're serving over HTTPS
-            sameSite: 'strict',
-            expires: new Date(0), // Set expiration date to the past
-        });
+        try {
+            const refreshToken = req.cookies?.refreshToken;
+            await this.authUsecase.logoutUser(refreshToken);
 
+            const cookieOptions = {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax" as const,
+                path: "/",
+            };
 
-        res.status(200).json({ status: "success", data: "Logged out successfully" })
+            res.clearCookie("authToken", cookieOptions);
+            res.clearCookie("refreshToken", cookieOptions);
+
+            res.status(200).json({ status: "success", data: "Logged out successfully" });
+        } catch (error) {
+            next(error);
+        }
     }
 
     async getToken(req: Request, res: Response, next: NextFunction) {

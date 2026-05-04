@@ -54,6 +54,41 @@ function extractVectorSize(collectionInfo: unknown): number | null {
   return null;
 }
 
+function toGeoPoint(
+  location?: { lat?: number; lng?: number }
+): { lat: number; lon: number } | undefined {
+  if (
+    location?.lat === undefined ||
+    location?.lng === undefined ||
+    !Number.isFinite(location.lat) ||
+    !Number.isFinite(location.lng)
+  ) {
+    return undefined;
+  }
+
+  return {
+    lat: location.lat,
+    lon: location.lng,
+  };
+}
+
+async function ensureTripGeoIndex() {
+  const qdrantClient = getQdrantClient();
+
+  try {
+    await qdrantClient.createPayloadIndex(tripCollectionName, {
+      field_name: "location",
+      field_schema: "geo",
+      wait: true,
+    });
+  } catch (error) {
+    console.warn(
+      `Qdrant geo index check skipped for "${tripCollectionName}".`,
+      error
+    );
+  }
+}
+
 async function seedTripVectors() {
   const qdrantClient = getQdrantClient();
   const trips = (await TripModel.find().lean()) as TripVectorSource[];
@@ -72,7 +107,7 @@ async function seedTripVectors() {
     if (!vector) continue;
 
     const startingPoint = getGeoPoint(trip.startingPoint);
-    const destination = getGeoPoint(trip.destination);
+    const location = toGeoPoint(startingPoint);
 
     await qdrantClient.upsert(tripCollectionName, {
       wait: true,
@@ -85,10 +120,7 @@ async function seedTripVectors() {
             creatorId: trip.creator_id ? String(trip.creator_id) : undefined,
             title: trip.title,
             description: trip.description,
-            startingLat: startingPoint.lat,
-            startingLng: startingPoint.lng,
-            destinationLat: destination.lat,
-            destinationLng: destination.lng,
+            ...(location ? { location } : {}),
             destinationName: trip.destination?.name,
             startingPointName: trip.startingPoint?.name,
             startDate: trip.startDate,
@@ -140,6 +172,8 @@ async function ensureTripCollection() {
       },
     });
 
+    await ensureTripGeoIndex();
+
     console.log(
       `Qdrant collection ready: ${tripCollectionName} (size=${tripVectorSize})`
     );
@@ -152,9 +186,12 @@ async function ensureTripCollection() {
     console.log(
       `Qdrant collection "${tripCollectionName}" is empty. Seeding trip vectors from MongoDB.`
     );
+    await ensureTripGeoIndex();
     await seedTripVectors();
     return;
   }
+
+  await ensureTripGeoIndex();
 
   console.log(
     `Qdrant collection ready: ${tripCollectionName} (size=${tripVectorSize}, points=${pointCount})`

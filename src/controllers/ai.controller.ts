@@ -9,7 +9,7 @@ export class AiController {
       const message = req.body?.message as string;
       const lat = Number(req.body?.lat);
       const lng = Number(req.body?.lng);
-      const radius = Number(req.body?.radius);
+      const radius = Number(req.body?.radius) || 30;  //km
       const location =
         Number.isFinite(lat) && Number.isFinite(lng)
           ? {

@@ -10,7 +10,7 @@ export interface IAuthUsecase{
     sendOtpByEmail(email: string, subject: string): Promise<void>
     resetPassword(email: string): Promise<string>
     verifyResetPassword(email: string,otp: string, newpassword: string): Promise<string>
-    logoutUser(): string
+    logoutUser(refreshToken?: string): Promise<string>
     getAuth(email: string): Promise<IAuth>
 }
 
