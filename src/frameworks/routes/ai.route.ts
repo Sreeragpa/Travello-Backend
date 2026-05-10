@@ -13,6 +13,7 @@ const aiController = new AiController(aiUsecase);
 // POST /api/ai/trip-chat
 router.post(
   "/trip-chat",
+  authMiddleware,
   (req: Request, res: Response, next: NextFunction) =>
     aiController.tripChat(req, res, next)
 );
