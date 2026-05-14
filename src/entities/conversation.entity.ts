@@ -8,6 +8,7 @@ export default interface IConversation{
     memberDetails?: IUser[],
     isGroup: boolean;
     groupName?: string;
+    groupProfile?: string;
     currentUserId?: string
     latestMessage?: string
     unreadMessage: Map<string, boolean>;

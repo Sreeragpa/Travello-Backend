@@ -16,6 +16,9 @@ const conversationSchema = new mongoose.Schema({
         type: Map,
         of: Boolean,
         default: {}
+    },
+    groupProfile: {
+        type: String
     }
 
 },{timestamps: true});

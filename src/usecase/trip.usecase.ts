@@ -178,7 +178,11 @@ export class TripUsecase implements ITripUsecase {
           // best-effort only
         }
 
-        const newGroupConversation = await this.conversationRepository.createGroupConversation([data.creator_id],data.title);
+        const newGroupConversation = await this.conversationRepository.createGroupConversation(
+          [data.creator_id],
+          data.title,
+          data.imageUrl as string
+        );
         await this.tripRepository.addConversationIdtoTrip(createdTrip._id as string,newGroupConversation._id as string)
       }
       // createdTrip.title
