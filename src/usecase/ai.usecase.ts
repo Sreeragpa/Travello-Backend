@@ -1,8 +1,14 @@
 import OpenAI from "openai";
 import dotenv from "dotenv";
+import { IAiUtilizationRecord } from "../entities/aiUtilization.entity";
 import { ITrip } from "../entities/trip.entity";
+import { IAiUtilizationRepository } from "../interfaces/repositories/IAiUtilization.repository";
 import { ITripRepository } from "../interfaces/repositories/ITrip.repository";
-import { IAiUsecase, TripChatLocation } from "../interfaces/usecase/IAi.usecase";
+import {
+  IAiUsecase,
+  TripChatContext,
+  TripChatLocation,
+} from "../interfaces/usecase/IAi.usecase";
 import { searchTripIdsByText } from "../frameworks/utils/tripVectorStore";
 
 dotenv.config();
@@ -80,19 +86,71 @@ async function rapidApiChat(prompt: string): Promise<string | null> {
 // ---------------- MAIN USECASE ----------------
 
 export class AiUsecase implements IAiUsecase {
-  constructor(private tripRepository: ITripRepository) { }
+  constructor(
+    private tripRepository: ITripRepository,
+    private aiUtilizationRepository: IAiUtilizationRepository
+  ) {}
+
+  private logTripChat(
+    startedAt: number,
+    userMessage: string,
+    location: TripChatLocation | undefined,
+    result: { reply: string; trips: ITrip[] },
+    tripChatContext: TripChatContext | undefined,
+    meta: Pick<
+      IAiUtilizationRecord,
+      | "provider"
+      | "model"
+      | "promptTokens"
+      | "completionTokens"
+      | "totalTokens"
+      | "errorSummary"
+    >
+  ) {
+    const hadLocationFilter =
+      location?.lat !== undefined &&
+      location?.lng !== undefined &&
+      Number.isFinite(location.lat) &&
+      Number.isFinite(location.lng);
+
+    const payload: IAiUtilizationRecord = {
+      user: tripChatContext?.userId,
+      feature: "trip_chat",
+      provider: meta.provider,
+      model: meta.model,
+      messageCharCount: userMessage.length,
+      replyCharCount: result.reply.length,
+      tripsReturnedCount: result.trips.length,
+      hadLocationFilter,
+      promptTokens: meta.promptTokens,
+      completionTokens: meta.completionTokens,
+      totalTokens: meta.totalTokens,
+      durationMs: Date.now() - startedAt,
+      errorSummary: meta.errorSummary,
+    };
+
+    void this.aiUtilizationRepository
+      .record(payload)
+      .catch((e) => console.error("AI utilization log failed:", e));
+  }
 
   async tripChat(
     message: string,
-    location?: TripChatLocation
+    location?: TripChatLocation,
+    tripChatContext?: TripChatContext
   ): Promise<{ reply: string; trips: ITrip[] }> {
+    const startedAt = Date.now();
     const userMessage = (message || "").trim();
 
     if (!userMessage) {
-      return {
+      const result = {
         reply: "Please tell me what kind of trip you're looking for.",
-        trips: [],
+        trips: [] as ITrip[],
       };
+      this.logTripChat(startedAt, userMessage, location, result, tripChatContext, {
+        provider: "skipped",
+      });
+      return result;
     }
 
     // ---------------- VECTOR SEARCH ----------------
@@ -118,8 +176,8 @@ export class AiUsecase implements IAiUsecase {
       trips = [];
     }
 
-    // ---------------- CONTEXT ----------------
-    const context =
+    // ---------------- TRIP RAG CONTEXT ----------------
+    const tripsContext =
       trips.length === 0
         ? "No matching trips found."
         : `Available trips:\n\n${trips
@@ -136,7 +194,7 @@ tags: ${t.tags?.join(", ") || "none"}`;
 
     // ---------------- PROMPT ----------------
     const userPrompt = `
-${context}
+${tripsContext}
 
 User request: ${userMessage}
 `;
@@ -165,7 +223,22 @@ User request: ${userMessage}
           resp.choices?.[0]?.message?.content?.trim() ||
           "I couldn’t generate a reply right now.";
 
-        return { reply, trips };
+        const result = { reply, trips };
+        this.logTripChat(
+          startedAt,
+          userMessage,
+          location,
+          result,
+          tripChatContext,
+          {
+            provider: "gemini",
+            model: chatModel,
+            promptTokens: resp.usage?.prompt_tokens,
+            completionTokens: resp.usage?.completion_tokens,
+            totalTokens: resp.usage?.total_tokens,
+          }
+        );
+        return result;
       } catch (err) {
         console.error("OpenAI Error:", err);
       }
@@ -175,13 +248,21 @@ User request: ${userMessage}
     const rapidReply = await rapidApiChat(userPrompt);
 
     if (rapidReply) {
-      return { reply: rapidReply, trips };
+      const result = { reply: rapidReply, trips };
+      this.logTripChat(startedAt, userMessage, location, result, tripChatContext, {
+        provider: "rapidapi",
+      });
+      return result;
     }
 
-    return {
+    const result = {
       reply:
         "AI search is temporarily unavailable. Try refining your query.",
       trips,
     };
+    this.logTripChat(startedAt, userMessage, location, result, tripChatContext, {
+      provider: "none",
+    });
+    return result;
   }
 }

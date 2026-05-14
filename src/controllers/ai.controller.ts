@@ -1,10 +1,11 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
+import { AuthenticatedRequest } from "../frameworks/middlewares/auth.middleware";
 import { IAiUsecase } from "../interfaces/usecase/IAi.usecase";
 
 export class AiController {
   constructor(private aiUsecase: IAiUsecase) {}
 
-  async tripChat(req: Request, res: Response, next: NextFunction) {
+  async tripChat(req: AuthenticatedRequest, res: Response, next: NextFunction) {
     try {
       const message = req.body?.message as string;
       const lat = Number(req.body?.lat);
@@ -19,7 +20,9 @@ export class AiController {
             }
           : undefined;
 
-      const data = await this.aiUsecase.tripChat(message, location);
+      const data = await this.aiUsecase.tripChat(message, location, {
+        userId: req.user?.user_id,
+      });
       res.status(200).json({ status: "success", data });
     } catch (error) {
       next(error);

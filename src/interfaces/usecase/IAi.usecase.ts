@@ -6,9 +6,14 @@ export type TripChatLocation = {
   radius?: number;
 };
 
+export type TripChatContext = {
+  userId?: string;
+};
+
 export interface IAiUsecase {
   tripChat(
     message: string,
-    location?: TripChatLocation
+    location?: TripChatLocation,
+    context?: TripChatContext
   ): Promise<{ reply: string; trips: ITrip[] }>;
 }
