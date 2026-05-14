@@ -101,13 +101,14 @@ export class ConversationRepository implements IConversationRepository {
         const conversation = await ConversationModel.findOne({ _id: conversationid, members: { $in: [user] } });
         return !!conversation
     }
-    async createGroupConversation(members: string[], groupName: string): Promise<IConversation> {
+    async createGroupConversation(members: string[], groupName: string, groupProfile?: string): Promise<IConversation> {
         try {
             const objectIds = members.map(id => new mongoose.Types.ObjectId(id));
             const newConversation = new ConversationModel({
                 members: objectIds,
                 isGroup: true,
-                groupName: groupName
+                groupName: groupName,
+                ...(groupProfile !== undefined && { groupProfile })
             });
 
             const savedConversation = await newConversation.save();

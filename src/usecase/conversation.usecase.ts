@@ -19,8 +19,8 @@ export class ConversationUsecase implements IConversationUsecase{
         if(!conversation){
             return conversation
         }
-        const filteredMemberDetails = conversation.memberDetails?.filter((user) => user._id.toString() !== userid);
-
+        // const filteredMemberDetails = conversation.memberDetails?.filter((user) => user._id.toString() !== userid);
+        const filteredMemberDetails = conversation.memberDetails
 
         return {
             ...conversation,
