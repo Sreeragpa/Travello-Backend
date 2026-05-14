@@ -53,8 +53,8 @@ export class AuthUsecase implements IAuthUsecase {
 
   }
 
-  logoutUser(): string {
-    throw new Error("Method not implemented.");
+  async logoutUser(refreshToken?: string): Promise<string> {
+    return this.authRepository.logout(refreshToken);
   }
   async verifyResetPassword(email: string, otp: string, newpassword: string):Promise<string> {
     try {
@@ -87,8 +87,9 @@ export class AuthUsecase implements IAuthUsecase {
       await this.authRepository.saveOtp(email, otp);
       await sendEmail(email, subject, `Your OTP is: ${otp}`);
       return;
-    } catch (error) {
-      throw new Error(ErrorCode.FAILED_SENDING_OTP);
+    } catch (error: any) {
+      console.error("Error sending OTP:", error);
+      throw new Error(error.message || ErrorCode.FAILED_SENDING_OTP);
     }
   }
   async userSignin(data: IAuth):Promise<{accessToken: string,refreshToken:string}> {

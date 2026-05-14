@@ -13,7 +13,7 @@ export interface IAuthRepository{
     emailAuth(email: string): Promise<IAuth>
     changePassword(email: string,password: string): Promise<string>
     verifyUserAccount(email: string): Promise<IAuth | null>
-    logout(): Promise<string>
+    logout(refreshToken?: string): Promise<string>
     findPassword(userid: string,password: string): Promise<string>
     checkUser(email:string): Promise<IAuth | null>
 }
