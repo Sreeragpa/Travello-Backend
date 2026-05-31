@@ -3,6 +3,7 @@ import { signJWT, verifyJWT } from "../utils/jwt.utils";
 import { IJwtPayload } from "../../interfaces/usecase/IUser.usecase";
 import { UserModel } from "../models/user.model";
 import IUser from "../../entities/user.entity";
+import { authCookieOptions } from "../utils/cookieOptions";
 
 export interface AuthenticatedRequest extends Request {
   user?: IJwtPayload;
@@ -55,16 +56,10 @@ export const authMiddleware = async (
 
       // Send new tokens to the client
       res.cookie("authToken", token.accessToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-        maxAge: 15 * 60 * 1000 // 15 minutes
+        ...authCookieOptions(15 * 60 * 1000),
       });
       res.cookie("refreshToken", token.refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // Expires in 7 days
+        ...authCookieOptions(7 * 24 * 60 * 60 * 1000),
       });
     }
 

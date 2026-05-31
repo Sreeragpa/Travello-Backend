@@ -4,6 +4,7 @@ import { ErrorCode } from "../enums/errorCodes.enum";
 import { AuthenticatedRequest } from "../frameworks/middlewares/auth.middleware";
 import { io } from "../server";
 import { forceUserOffline } from "../frameworks/configs/redis";
+import { authCookieOptions, clearAuthCookieOptions } from "../frameworks/utils/cookieOptions";
 
 export class AuthController {
     private authUsecase: IAuthUsecase;
@@ -49,19 +50,9 @@ export class AuthController {
             //     sameSite: 'strict'  // Allows cross-site cookie usage
             //   });
 
-            res.cookie('authToken', token.accessToken, {
-                httpOnly: true,
-                secure: false,
-                sameSite: 'lax',
-                maxAge: 15 * 60 * 1000 // 15 minutes
-            });
+            res.cookie('authToken', token.accessToken, authCookieOptions(15 * 60 * 1000));
 
-            res.cookie('refreshToken', token.refreshToken, {
-                httpOnly: true,
-                secure: false,
-                sameSite: 'lax',
-                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-            });
+            res.cookie('refreshToken', token.refreshToken, authCookieOptions(7 * 24 * 60 * 60 * 1000));
 
 
             res.status(200).json({ status: 'success', data: token.accessToken });
@@ -88,19 +79,9 @@ export class AuthController {
             //   });
 
 
-            res.cookie('authToken', token.accessToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'strict',
-                maxAge: 15 * 60 * 1000 // 15 minutes
-            });
+            res.cookie('authToken', token.accessToken, authCookieOptions(15 * 60 * 1000));
 
-            res.cookie('refreshToken', token.refreshToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'strict',
-                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-            });
+            res.cookie('refreshToken', token.refreshToken, authCookieOptions(7 * 24 * 60 * 60 * 1000));
 
 
 
@@ -149,20 +130,15 @@ export class AuthController {
             const userId = req.user?.user_id;
             await this.authUsecase.logoutUser(refreshToken);
 
+            console.log("RESa",userId,req.cookies)
+
             if (userId) {
                 await forceUserOffline(userId);
                 io.in(userId).disconnectSockets(true);
             }
 
-            const cookieOptions = {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "lax" as const,
-                path: "/",
-            };
-
-            res.clearCookie("authToken", cookieOptions);
-            res.clearCookie("refreshToken", cookieOptions);
+            res.clearCookie("authToken", clearAuthCookieOptions);
+            res.clearCookie("refreshToken", clearAuthCookieOptions);
 
             res.status(200).json({ status: "success", data: "Logged out successfully" });
         } catch (error) {

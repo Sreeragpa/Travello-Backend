@@ -21,6 +21,9 @@ import aiRouter from "../routes/ai.route"
 // Initialize Express application
  const app: Express = express();
 
+// Ensure secure cookies and protocol detection work correctly behind hosting proxies
+app.set("trust proxy", 1);
+
 // Load environment variables from .env file 
 dotenv.config();
 
@@ -34,10 +37,12 @@ const allowedOrigins = [
   'https://travello.sreerag.site',
   'https://travello-sigma.vercel.app'
 ];
+const envOrigins = process.env.CORS_ORIGINS?.split(",").map((origin) => origin.trim()).filter(Boolean);
+const corsOrigins = envOrigins?.length ? envOrigins : allowedOrigins;
 // Enable CORS 
 app.use(cors({
     // origin: 'http://localhost:4200', // Allow requests from Angular application
-    origin: allowedOrigins, // Allow requests from Angular application
+    origin: corsOrigins, // Allow requests from Angular application
     optionsSuccessStatus: 200 ,
     credentials: true // Include credentials (cookies) in cross-origin requests
   }));

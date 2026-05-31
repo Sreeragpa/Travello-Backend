@@ -2,6 +2,7 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -22,6 +23,8 @@ const admin_route_1 = __importDefault(require("../routes/admin.route"));
 const ai_route_1 = __importDefault(require("../routes/ai.route"));
 // Initialize Express application
 const app = (0, express_1.default)();
+// Ensure secure cookies and protocol detection work correctly behind hosting proxies
+app.set("trust proxy", 1);
 // Load environment variables from .env file 
 dotenv_1.default.config();
 // Parse incoming JSON requests with a maximum size of 50mb
@@ -30,14 +33,15 @@ app.use(express_1.default.json({ limit: '50mb' }));
 app.use(express_1.default.urlencoded({ extended: false }));
 const allowedOrigins = [
     'http://localhost:4200', // Allow requests from Angular application on localhost
-    'https://travello.srg.buzz',
-    'http://travello.srg.buzz',
-    'https://travello.srgweb.site',
+    'https://travello.sreerag.site',
+    'https://travello-sigma.vercel.app'
 ];
+const envOrigins = (_a = process.env.CORS_ORIGINS) === null || _a === void 0 ? void 0 : _a.split(",").map((origin) => origin.trim()).filter(Boolean);
+const corsOrigins = (envOrigins === null || envOrigins === void 0 ? void 0 : envOrigins.length) ? envOrigins : allowedOrigins;
 // Enable CORS 
 app.use((0, cors_1.default)({
     // origin: 'http://localhost:4200', // Allow requests from Angular application
-    origin: allowedOrigins, // Allow requests from Angular application
+    origin: corsOrigins, // Allow requests from Angular application
     optionsSuccessStatus: 200,
     credentials: true // Include credentials (cookies) in cross-origin requests
 }));
