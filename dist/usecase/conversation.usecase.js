@@ -21,12 +21,12 @@ class ConversationUsecase {
     }
     getConversationByid(userid, conversation_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
             let conversation = yield this.conversationRepository.findOneConversationwithUserDetails(conversation_id);
             if (!conversation) {
                 return conversation;
             }
-            const filteredMemberDetails = (_a = conversation.memberDetails) === null || _a === void 0 ? void 0 : _a.filter((user) => user._id.toString() !== userid);
+            // const filteredMemberDetails = conversation.memberDetails?.filter((user) => user._id.toString() !== userid);
+            const filteredMemberDetails = conversation.memberDetails;
             return Object.assign(Object.assign({}, conversation), { memberDetails: filteredMemberDetails });
         });
     }

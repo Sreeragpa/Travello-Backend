@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon",
     "start": "ts-node ./src/server.ts",
-    "pm2start": "ts-node -T -P tsconfig.json ./src/server.ts"
+    "pm2start": "ts-node -T -P tsconfig.json ./src/server.ts",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -35,6 +36,7 @@
     "mongoose": "^8.3.4",
     "nodemailer": "^6.9.13",
     "openai": "^6.34.0",
+    "redis": "^4.7.1",
     "socket.io": "^4.7.5",
     "ts-node": "^10.9.2"
   },

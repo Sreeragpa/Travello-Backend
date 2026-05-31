@@ -28,7 +28,7 @@ router.post('/google', (req, res, next) => {
 router.get('/test', (req, res, next) => {
     res.status(200).json({ message: "/api/auth Working like a pro" });
 });
-router.post('/logout', (req, res, next) => {
+router.post('/logout', auth_middleware_1.authMiddleware, (req, res, next) => {
     authController.logout(req, res, next);
     // res.cookie('authToken', '', { expires: new Date(0) });
     // res.status(200).json({status:"Success",message:"logout"})

@@ -111,5 +111,16 @@ class UserController {
             }
         });
     }
+    getOnlineUsers(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const onlineUsers = yield this.userUsecase.getOnlineUsers();
+                res.status(200).json({ status: "success", data: onlineUsers });
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
 }
 exports.UserController = UserController;

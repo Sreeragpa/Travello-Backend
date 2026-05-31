@@ -55,6 +55,33 @@ function extractVectorSize(collectionInfo) {
     }
     return null;
 }
+function toGeoPoint(location) {
+    if ((location === null || location === void 0 ? void 0 : location.lat) === undefined ||
+        (location === null || location === void 0 ? void 0 : location.lng) === undefined ||
+        !Number.isFinite(location.lat) ||
+        !Number.isFinite(location.lng)) {
+        return undefined;
+    }
+    return {
+        lat: location.lat,
+        lon: location.lng,
+    };
+}
+function ensureTripGeoIndex() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const qdrantClient = getQdrantClient();
+        try {
+            yield qdrantClient.createPayloadIndex(tripCollectionName, {
+                field_name: "location",
+                field_schema: "geo",
+                wait: true,
+            });
+        }
+        catch (error) {
+            console.warn(`Qdrant geo index check skipped for "${tripCollectionName}".`, error);
+        }
+    });
+}
 function seedTripVectors() {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b;
@@ -72,28 +99,14 @@ function seedTripVectors() {
             if (!vector)
                 continue;
             const startingPoint = (0, tripVectorHelpers_1.getGeoPoint)(trip.startingPoint);
-            const destination = (0, tripVectorHelpers_1.getGeoPoint)(trip.destination);
+            const location = toGeoPoint(startingPoint);
             yield qdrantClient.upsert(tripCollectionName, {
                 wait: true,
                 points: [
                     {
                         id: (0, tripVectorHelpers_1.getPointId)(String(trip._id)),
                         vector,
-                        payload: {
-                            tripId: String(trip._id),
-                            creatorId: trip.creator_id ? String(trip.creator_id) : undefined,
-                            title: trip.title,
-                            description: trip.description,
-                            startingLat: startingPoint.lat,
-                            startingLng: startingPoint.lng,
-                            destinationLat: destination.lat,
-                            destinationLng: destination.lng,
-                            destinationName: (_a = trip.destination) === null || _a === void 0 ? void 0 : _a.name,
-                            startingPointName: (_b = trip.startingPoint) === null || _b === void 0 ? void 0 : _b.name,
-                            startDate: trip.startDate,
-                            endDate: trip.endDate,
-                            tags: trip.tags || [],
-                        },
+                        payload: Object.assign(Object.assign({ tripId: String(trip._id), creatorId: trip.creator_id ? String(trip.creator_id) : undefined, title: trip.title, description: trip.description }, (location ? { location } : {})), { destinationName: (_a = trip.destination) === null || _a === void 0 ? void 0 : _a.name, startingPointName: (_b = trip.startingPoint) === null || _b === void 0 ? void 0 : _b.name, startDate: trip.startDate, endDate: trip.endDate, tags: trip.tags || [] }),
                     },
                 ],
             });
@@ -131,15 +144,18 @@ function ensureTripCollection() {
                     distance: "Cosine",
                 },
             });
+            yield ensureTripGeoIndex();
             console.log(`Qdrant collection ready: ${tripCollectionName} (size=${tripVectorSize})`);
             yield seedTripVectors();
             return;
         }
         if (pointCount === 0) {
             console.log(`Qdrant collection "${tripCollectionName}" is empty. Seeding trip vectors from MongoDB.`);
+            yield ensureTripGeoIndex();
             yield seedTripVectors();
             return;
         }
+        yield ensureTripGeoIndex();
         console.log(`Qdrant collection ready: ${tripCollectionName} (size=${tripVectorSize}, points=${pointCount})`);
     });
 }

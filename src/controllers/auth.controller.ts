@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { IAuthUsecase } from "../interfaces/usecase/IAuth.usecase";
 import { ErrorCode } from "../enums/errorCodes.enum";
+import { AuthenticatedRequest } from "../frameworks/middlewares/auth.middleware";
+import { io } from "../server";
+import { forceUserOffline } from "../frameworks/configs/redis";
 
 export class AuthController {
     private authUsecase: IAuthUsecase;
@@ -140,10 +143,16 @@ export class AuthController {
         }
     }
 
-    async logout(req: Request, res: Response, next: NextFunction) {
+    async logout(req: AuthenticatedRequest, res: Response, next: NextFunction) {
         try {
             const refreshToken = req.cookies?.refreshToken;
+            const userId = req.user?.user_id;
             await this.authUsecase.logoutUser(refreshToken);
+
+            if (userId) {
+                await forceUserOffline(userId);
+                io.in(userId).disconnectSockets(true);
+            }
 
             const cookieOptions = {
                 httpOnly: true,

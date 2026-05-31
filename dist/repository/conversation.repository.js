@@ -113,15 +113,11 @@ class ConversationRepository {
             return !!conversation;
         });
     }
-    createGroupConversation(members, groupName) {
+    createGroupConversation(members, groupName, groupProfile) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const objectIds = members.map(id => new mongoose_1.default.Types.ObjectId(id));
-                const newConversation = new conversation_model_1.ConversationModel({
-                    members: objectIds,
-                    isGroup: true,
-                    groupName: groupName
-                });
+                const newConversation = new conversation_model_1.ConversationModel(Object.assign({ members: objectIds, isGroup: true, groupName: groupName }, (groupProfile !== undefined && { groupProfile })));
                 const savedConversation = yield newConversation.save();
                 return savedConversation;
             }
