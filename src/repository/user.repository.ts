@@ -5,6 +5,7 @@ import { IUserRepository } from "../interfaces/repositories/IUser.repository";
 import { AuthModel } from "../frameworks/models/auth.model";
 import { ErrorCode } from "../enums/errorCodes.enum";
 import { IStatisticsData } from "../entities/admin.entity";
+import { getOnlineUserIds, isUserOnline } from "../frameworks/configs/redis";
 export interface IUserData extends Document{}
 
 export class UserRepository implements IUserRepository{
@@ -18,6 +19,22 @@ export class UserRepository implements IUserRepository{
      } catch (error) {
       throw error
      }
+    }
+
+    async getUsersByIds(userIds: string[]): Promise<IUser[]> {
+      try {
+        if (userIds.length === 0) {
+          return [];
+        }
+        const users = await UserModel.find({ _id: { $in: userIds } });
+        return users;
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    async isUserOnline(userid: string): Promise<boolean> {
+      return isUserOnline(userid);
     }
 
     async blockUser(userid: string): Promise<IUser> {
@@ -37,6 +54,11 @@ export class UserRepository implements IUserRepository{
     async getAllUser(): Promise<IUser[]> {
       const users = await UserModel.find();
       return users
+    }
+
+    async getOnlineUsers(): Promise<IUser[]> {
+      const onlineUserIds = await getOnlineUserIds();
+      return this.getUsersByIds(onlineUserIds);
     }
     async getUserCountByDate(days: number): Promise<IStatisticsData[]> {
       let matchStage = {};

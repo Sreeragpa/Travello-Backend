@@ -27,7 +27,7 @@ router.get('/test', (req: Request, res: Response, next: NextFunction)=>{
     res.status(200).json({message:"/api/auth Working like a pro"})
 });
 
-router.post('/logout',(req: Request, res: Response, next: NextFunction)=>{
+router.post('/logout', authMiddleware,(req: Request, res: Response, next: NextFunction)=>{
     authController.logout(req,res,next)
     // res.cookie('authToken', '', { expires: new Date(0) });
     // res.status(200).json({status:"Success",message:"logout"})

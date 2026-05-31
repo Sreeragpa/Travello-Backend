@@ -14,6 +14,18 @@ exports.searchTripIdsByText = searchTripIdsByText;
 const qdrant_1 = require("../configs/qdrant");
 const openaiEmbedding_1 = require("./openaiEmbedding");
 const tripVectorHelpers_1 = require("./tripVectorHelpers");
+function toGeoPoint(location) {
+    if ((location === null || location === void 0 ? void 0 : location.lat) === undefined ||
+        (location === null || location === void 0 ? void 0 : location.lng) === undefined ||
+        !Number.isFinite(location.lat) ||
+        !Number.isFinite(location.lng)) {
+        return undefined;
+    }
+    return {
+        lat: location.lat,
+        lon: location.lng,
+    };
+}
 function upsertTripVector(trip) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b;
@@ -26,28 +38,14 @@ function upsertTripVector(trip) {
         const collection = (0, qdrant_1.getTripCollectionName)();
         const id = String(trip._id);
         const startingPoint = (0, tripVectorHelpers_1.getGeoPoint)(trip.startingPoint);
-        const destination = (0, tripVectorHelpers_1.getGeoPoint)(trip.destination);
+        const location = toGeoPoint(startingPoint);
         yield qdrantClient.upsert(collection, {
             wait: true,
             points: [
                 {
                     id: (0, tripVectorHelpers_1.getPointId)(id),
                     vector,
-                    payload: {
-                        tripId: id,
-                        creatorId: String(trip.creator_id),
-                        title: trip.title,
-                        description: trip.description,
-                        startingLat: startingPoint.lat,
-                        startingLng: startingPoint.lng,
-                        destinationLat: destination.lat,
-                        destinationLng: destination.lng,
-                        destinationName: (_a = trip.destination) === null || _a === void 0 ? void 0 : _a.name,
-                        startingPointName: (_b = trip.startingPoint) === null || _b === void 0 ? void 0 : _b.name,
-                        startDate: trip.startDate,
-                        endDate: trip.endDate,
-                        tags: trip.tags || [],
-                    },
+                    payload: Object.assign(Object.assign({ tripId: id, creatorId: String(trip.creator_id), title: trip.title, description: trip.description }, (location ? { location } : {})), { destinationName: (_a = trip.destination) === null || _a === void 0 ? void 0 : _a.name, startingPointName: (_b = trip.startingPoint) === null || _b === void 0 ? void 0 : _b.name, startDate: trip.startDate, endDate: trip.endDate, tags: trip.tags || [] }),
                 },
             ],
         });
@@ -61,21 +59,17 @@ function searchTripIdsByText(query_1) {
             return [];
         let filter = undefined;
         if ((options === null || options === void 0 ? void 0 : options.lat) !== undefined && (options === null || options === void 0 ? void 0 : options.lng) !== undefined) {
-            const range = options.radius || 1;
+            const radiusInMeters = (options.radius || 30) * 1000;
             filter = {
                 must: [
                     {
-                        key: "startingLat",
-                        range: {
-                            gte: options.lat - range,
-                            lte: options.lat + range,
-                        },
-                    },
-                    {
-                        key: "startingLng",
-                        range: {
-                            gte: options.lng - range,
-                            lte: options.lng + range,
+                        key: "location",
+                        geo_radius: {
+                            center: {
+                                lat: options.lat,
+                                lon: options.lng,
+                            },
+                            radius: radiusInMeters,
                         },
                     },
                 ],

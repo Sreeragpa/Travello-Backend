@@ -78,18 +78,48 @@ function rapidApiChat(prompt) {
 }
 // ---------------- MAIN USECASE ----------------
 class AiUsecase {
-    constructor(tripRepository) {
+    constructor(tripRepository, aiUtilizationRepository) {
         this.tripRepository = tripRepository;
+        this.aiUtilizationRepository = aiUtilizationRepository;
     }
-    tripChat(message, location) {
+    logTripChat(startedAt, userMessage, location, result, tripChatContext, meta) {
+        const hadLocationFilter = (location === null || location === void 0 ? void 0 : location.lat) !== undefined &&
+            (location === null || location === void 0 ? void 0 : location.lng) !== undefined &&
+            Number.isFinite(location.lat) &&
+            Number.isFinite(location.lng);
+        const payload = {
+            user: tripChatContext === null || tripChatContext === void 0 ? void 0 : tripChatContext.userId,
+            feature: "trip_chat",
+            provider: meta.provider,
+            model: meta.model,
+            messageCharCount: userMessage.length,
+            replyCharCount: result.reply.length,
+            tripsReturnedCount: result.trips.length,
+            hadLocationFilter,
+            promptTokens: meta.promptTokens,
+            completionTokens: meta.completionTokens,
+            totalTokens: meta.totalTokens,
+            durationMs: Date.now() - startedAt,
+            errorSummary: meta.errorSummary,
+        };
+        void this.aiUtilizationRepository
+            .record(payload)
+            .catch((e) => console.error("AI utilization log failed:", e));
+    }
+    tripChat(message, location, tripChatContext) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d;
+            var _a, _b, _c, _d, _e, _f, _g;
+            const startedAt = Date.now();
             const userMessage = (message || "").trim();
             if (!userMessage) {
-                return {
+                const result = {
                     reply: "Please tell me what kind of trip you're looking for.",
                     trips: [],
                 };
+                this.logTripChat(startedAt, userMessage, location, result, tripChatContext, {
+                    provider: "skipped",
+                });
+                return result;
             }
             // ---------------- VECTOR SEARCH ----------------
             let trips = [];
@@ -110,8 +140,8 @@ class AiUsecase {
                 console.error("Vector search error:", err);
                 trips = [];
             }
-            // ---------------- CONTEXT ----------------
-            const context = trips.length === 0
+            // ---------------- TRIP RAG CONTEXT ----------------
+            const tripsContext = trips.length === 0
                 ? "No matching trips found."
                 : `Available trips:\n\n${trips
                     .map((t, idx) => {
@@ -127,7 +157,7 @@ tags: ${((_c = t.tags) === null || _c === void 0 ? void 0 : _c.join(", ")) || "n
                     .join("\n\n")}`;
             // ---------------- PROMPT ----------------
             const userPrompt = `
-${context}
+${tripsContext}
 
 User request: ${userMessage}
 `;
@@ -150,7 +180,15 @@ User request: ${userMessage}
                     });
                     const reply = ((_d = (_c = (_b = (_a = resp.choices) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.message) === null || _c === void 0 ? void 0 : _c.content) === null || _d === void 0 ? void 0 : _d.trim()) ||
                         "I couldn’t generate a reply right now.";
-                    return { reply, trips };
+                    const result = { reply, trips };
+                    this.logTripChat(startedAt, userMessage, location, result, tripChatContext, {
+                        provider: "gemini",
+                        model: chatModel,
+                        promptTokens: (_e = resp.usage) === null || _e === void 0 ? void 0 : _e.prompt_tokens,
+                        completionTokens: (_f = resp.usage) === null || _f === void 0 ? void 0 : _f.completion_tokens,
+                        totalTokens: (_g = resp.usage) === null || _g === void 0 ? void 0 : _g.total_tokens,
+                    });
+                    return result;
                 }
                 catch (err) {
                     console.error("OpenAI Error:", err);
@@ -159,12 +197,20 @@ User request: ${userMessage}
             // ---------------- FALLBACK ----------------
             const rapidReply = yield rapidApiChat(userPrompt);
             if (rapidReply) {
-                return { reply: rapidReply, trips };
+                const result = { reply: rapidReply, trips };
+                this.logTripChat(startedAt, userMessage, location, result, tripChatContext, {
+                    provider: "rapidapi",
+                });
+                return result;
             }
-            return {
+            const result = {
                 reply: "AI search is temporarily unavailable. Try refining your query.",
                 trips,
             };
+            this.logTripChat(startedAt, userMessage, location, result, tripChatContext, {
+                provider: "none",
+            });
+            return result;
         });
     }
 }

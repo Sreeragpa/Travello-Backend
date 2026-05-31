@@ -17,4 +17,5 @@ export default interface IUser extends Document{
     isFollowing:boolean;
     isBlocked: boolean
     isPremium: boolean
+    isOnline?: boolean
   }

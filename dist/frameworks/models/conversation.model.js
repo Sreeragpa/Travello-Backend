@@ -20,6 +20,9 @@ const conversationSchema = new mongoose_1.default.Schema({
         type: Map,
         of: Boolean,
         default: {}
+    },
+    groupProfile: {
+        type: String
     }
 }, { timestamps: true });
 exports.ConversationModel = mongoose_1.default.model('conversations', conversationSchema);

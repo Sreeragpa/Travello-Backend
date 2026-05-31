@@ -55,8 +55,10 @@ class AuthUsecase {
             }
         });
     }
-    logoutUser() {
-        throw new Error("Method not implemented.");
+    logoutUser(refreshToken) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.authRepository.logout(refreshToken);
+        });
     }
     verifyResetPassword(email, otp, newpassword) {
         return __awaiter(this, void 0, void 0, function* () {

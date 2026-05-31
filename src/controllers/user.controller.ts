@@ -119,4 +119,13 @@ export class UserController {
             next(error)
         }
     }
+
+    async getOnlineUsers(req: AuthenticatedRequest, res: Response, next: NextFunction){
+        try {
+            const onlineUsers = await this.userUsecase.getOnlineUsers();
+            res.status(200).json({status:"success",data:onlineUsers});
+        } catch (error) {
+            next(error);
+        }
+    }
 }

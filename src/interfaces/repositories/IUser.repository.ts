@@ -10,9 +10,12 @@ export interface IUserRepository{
     updatePassword(userid: string, password: string): Promise<string>
     searchUser(searchKey: string): Promise<IUser[]>
     getAllUser(): Promise<IUser[]>
+    getOnlineUsers(): Promise<IUser[]>
     blockUser(userid: string): Promise<IUser>
     unBlockUser(userid: string): Promise<IUser>
     getUsername(userid: string): Promise<{username: string}>
+    getUsersByIds(userIds: string[]): Promise<IUser[]>
+    isUserOnline(userid: string): Promise<boolean>
 }   
 
 export interface ILikedUser{

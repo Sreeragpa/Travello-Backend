@@ -16,16 +16,18 @@ class AiController {
     }
     tripChat(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d;
+            var _a, _b, _c, _d, _e;
             try {
                 const message = (_a = req.body) === null || _a === void 0 ? void 0 : _a.message;
                 const lat = Number((_b = req.body) === null || _b === void 0 ? void 0 : _b.lat);
                 const lng = Number((_c = req.body) === null || _c === void 0 ? void 0 : _c.lng);
-                const radius = Number((_d = req.body) === null || _d === void 0 ? void 0 : _d.radius);
+                const radius = Number((_d = req.body) === null || _d === void 0 ? void 0 : _d.radius) || 30; //km
                 const location = Number.isFinite(lat) && Number.isFinite(lng)
                     ? Object.assign({ lat,
                         lng }, (Number.isFinite(radius) && { radius })) : undefined;
-                const data = yield this.aiUsecase.tripChat(message, location);
+                const data = yield this.aiUsecase.tripChat(message, location, {
+                    userId: (_e = req.user) === null || _e === void 0 ? void 0 : _e.user_id,
+                });
                 res.status(200).json({ status: "success", data });
             }
             catch (error) {

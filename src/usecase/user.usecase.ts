@@ -34,6 +34,19 @@ export class UserUsecase implements IUserUsecase {
         throw error
        }
     }
+
+    async getOnlineUsers(): Promise<IUser[]> {
+        try {
+            const onlineUsers = await this.userRepository.getOnlineUsers();
+            return onlineUsers.map((user) => ({
+                ...user.toObject(),
+                isOnline: true,
+                isFollowing: false
+            } as IUser));
+        } catch (error) {
+            throw error;
+        }
+    }
     async updateUserProfile(userid:string, updatefields: any): Promise<IUser> {
         try {
             if(updatefields.username){
@@ -80,8 +93,9 @@ export class UserUsecase implements IUserUsecase {
         }
         const userWithFollowing = {
             ...user.toObject(),
-            isFollowing: isFollowing
-        };
+            isFollowing: isFollowing,
+            isOnline: await this.userRepository.isUserOnline(userid)
+        } as IUser;
 
         // Return user along with the isFollowing status
         return userWithFollowing

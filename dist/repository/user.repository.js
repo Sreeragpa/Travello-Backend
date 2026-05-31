@@ -13,6 +13,7 @@ exports.UserRepository = void 0;
 const user_model_1 = require("../frameworks/models/user.model");
 const auth_model_1 = require("../frameworks/models/auth.model");
 const errorCodes_enum_1 = require("../enums/errorCodes.enum");
+const redis_1 = require("../frameworks/configs/redis");
 class UserRepository {
     getUsername(userid) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -26,6 +27,25 @@ class UserRepository {
             catch (error) {
                 throw error;
             }
+        });
+    }
+    getUsersByIds(userIds) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (userIds.length === 0) {
+                    return [];
+                }
+                const users = yield user_model_1.UserModel.find({ _id: { $in: userIds } });
+                return users;
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
+    isUserOnline(userid) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return (0, redis_1.isUserOnline)(userid);
         });
     }
     blockUser(userid) {
@@ -50,6 +70,12 @@ class UserRepository {
         return __awaiter(this, void 0, void 0, function* () {
             const users = yield user_model_1.UserModel.find();
             return users;
+        });
+    }
+    getOnlineUsers() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const onlineUserIds = yield (0, redis_1.getOnlineUserIds)();
+            return this.getUsersByIds(onlineUserIds);
         });
     }
     getUserCountByDate(days) {

@@ -43,6 +43,10 @@ router.get('/search-user',authMiddleware,(req: Request,res: Response, next: Next
     userController.searchUser(req,res,next)
 })
 
+router.get('/online-users',authMiddleware,(req: Request,res: Response, next: NextFunction)=>{
+    userController.getOnlineUsers(req,res,next)
+})
+
 
 
 export default router

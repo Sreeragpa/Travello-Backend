@@ -10,6 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
+const server_1 = require("../server");
+const redis_1 = require("../frameworks/configs/redis");
 class AuthController {
     constructor(authUsecase) {
         this.authUsecase = authUsecase;
@@ -146,19 +148,28 @@ class AuthController {
     }
     logout(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            res.cookie('authToken', '', {
-                httpOnly: true,
-                secure: true, // Use true if you're serving over HTTPS
-                sameSite: 'strict',
-                expires: new Date(0), // Set expiration date to the past
-            });
-            res.cookie('refreshToken', '', {
-                httpOnly: true,
-                secure: true, // Use true if you're serving over HTTPS
-                sameSite: 'strict',
-                expires: new Date(0), // Set expiration date to the past
-            });
-            res.status(200).json({ status: "success", data: "Logged out successfully" });
+            var _a, _b;
+            try {
+                const refreshToken = (_a = req.cookies) === null || _a === void 0 ? void 0 : _a.refreshToken;
+                const userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.user_id;
+                yield this.authUsecase.logoutUser(refreshToken);
+                if (userId) {
+                    yield (0, redis_1.forceUserOffline)(userId);
+                    server_1.io.in(userId).disconnectSockets(true);
+                }
+                const cookieOptions = {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                    sameSite: "lax",
+                    path: "/",
+                };
+                res.clearCookie("authToken", cookieOptions);
+                res.clearCookie("refreshToken", cookieOptions);
+                res.status(200).json({ status: "success", data: "Logged out successfully" });
+            }
+            catch (error) {
+                next(error);
+            }
         });
     }
     getToken(req, res, next) {

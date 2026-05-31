@@ -30,8 +30,14 @@ class AuthRepository {
             }
         });
     }
-    logout() {
-        throw new Error("Method not implemented.");
+    logout(refreshToken) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!refreshToken) {
+                return "Logged out successfully";
+            }
+            yield auth_model_1.AuthModel.updateOne({ token: refreshToken }, { $pull: { token: refreshToken } });
+            return "Logged out successfully";
+        });
     }
     verifyUserAccount(email) {
         return __awaiter(this, void 0, void 0, function* () {

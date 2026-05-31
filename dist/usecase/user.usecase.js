@@ -39,6 +39,17 @@ class UserUsecase {
             }
         });
     }
+    getOnlineUsers() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const onlineUsers = yield this.userRepository.getOnlineUsers();
+                return onlineUsers.map((user) => (Object.assign(Object.assign({}, user.toObject()), { isOnline: true, isFollowing: false })));
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
     updateUserProfile(userid, updatefields) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -86,7 +97,7 @@ class UserUsecase {
                 if (userid !== currentUser) {
                     isFollowing = yield this.followRepository.isUserFollowing(currentUser, userid);
                 }
-                const userWithFollowing = Object.assign(Object.assign({}, user.toObject()), { isFollowing: isFollowing });
+                const userWithFollowing = Object.assign(Object.assign({}, user.toObject()), { isFollowing: isFollowing, isOnline: yield this.userRepository.isUserOnline(userid) });
                 // Return user along with the isFollowing status
                 return userWithFollowing;
             }

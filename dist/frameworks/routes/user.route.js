@@ -40,4 +40,7 @@ router.put('/update-profile', auth_middleware_1.authMiddleware, (req, res, next)
 router.get('/search-user', auth_middleware_1.authMiddleware, (req, res, next) => {
     userController.searchUser(req, res, next);
 });
+router.get('/online-users', auth_middleware_1.authMiddleware, (req, res, next) => {
+    userController.getOnlineUsers(req, res, next);
+});
 exports.default = router;

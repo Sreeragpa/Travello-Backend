@@ -170,7 +170,7 @@ class TripUsecase {
                     catch (e) {
                         // best-effort only
                     }
-                    const newGroupConversation = yield this.conversationRepository.createGroupConversation([data.creator_id], data.title);
+                    const newGroupConversation = yield this.conversationRepository.createGroupConversation([data.creator_id], data.title, data.imageUrl);
                     yield this.tripRepository.addConversationIdtoTrip(createdTrip._id, newGroupConversation._id);
                 }
                 // createdTrip.title

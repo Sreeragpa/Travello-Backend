@@ -7,6 +7,7 @@ export interface IUserUsecase{
     updateUserProfile(userid: string, updatefields: any): Promise<IUser>
     updatePassword(userid: string, oldPassword: string,newPassword: string): Promise<IUser>
     searchUser(userid: string,searchKey: string): Promise<IUser[]>
+    getOnlineUsers(): Promise<IUser[]>
 }
 
 
@@ -17,4 +18,3 @@ export interface    IJwtPayload{
     id: string,
     user_id: string
 }
-
