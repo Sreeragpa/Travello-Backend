@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const server_1 = require("../server");
 const redis_1 = require("../frameworks/configs/redis");
+const cookieOptions_1 = require("../frameworks/utils/cookieOptions");
 class AuthController {
     constructor(authUsecase) {
         this.authUsecase = authUsecase;
@@ -58,18 +59,8 @@ class AuthController {
                 //     secure: true,  // Use true if you're serving over HTTPS
                 //     sameSite: 'strict'  // Allows cross-site cookie usage
                 //   });
-                res.cookie('authToken', token.accessToken, {
-                    httpOnly: true,
-                    secure: false,
-                    sameSite: 'lax',
-                    maxAge: 15 * 60 * 1000 // 15 minutes
-                });
-                res.cookie('refreshToken', token.refreshToken, {
-                    httpOnly: true,
-                    secure: false,
-                    sameSite: 'lax',
-                    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-                });
+                res.cookie('authToken', token.accessToken, (0, cookieOptions_1.authCookieOptions)(15 * 60 * 1000));
+                res.cookie('refreshToken', token.refreshToken, (0, cookieOptions_1.authCookieOptions)(7 * 24 * 60 * 60 * 1000));
                 res.status(200).json({ status: 'success', data: token.accessToken });
             }
             catch (error) {
@@ -92,18 +83,8 @@ class AuthController {
                 //     secure: true,  // Use true if you're serving over HTTPS
                 //     sameSite: 'strict'  // Allows cross-site cookie usage
                 //   });
-                res.cookie('authToken', token.accessToken, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'strict',
-                    maxAge: 15 * 60 * 1000 // 15 minutes
-                });
-                res.cookie('refreshToken', token.refreshToken, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'strict',
-                    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-                });
+                res.cookie('authToken', token.accessToken, (0, cookieOptions_1.authCookieOptions)(15 * 60 * 1000));
+                res.cookie('refreshToken', token.refreshToken, (0, cookieOptions_1.authCookieOptions)(7 * 24 * 60 * 60 * 1000));
                 res.status(200).json({ status: 'success', data: token.accessToken });
             }
             catch (error) {
@@ -153,18 +134,13 @@ class AuthController {
                 const refreshToken = (_a = req.cookies) === null || _a === void 0 ? void 0 : _a.refreshToken;
                 const userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.user_id;
                 yield this.authUsecase.logoutUser(refreshToken);
+                console.log("RESa", userId, req.cookies);
                 if (userId) {
                     yield (0, redis_1.forceUserOffline)(userId);
                     server_1.io.in(userId).disconnectSockets(true);
                 }
-                const cookieOptions = {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === "production",
-                    sameSite: "lax",
-                    path: "/",
-                };
-                res.clearCookie("authToken", cookieOptions);
-                res.clearCookie("refreshToken", cookieOptions);
+                res.clearCookie("authToken", cookieOptions_1.clearAuthCookieOptions);
+                res.clearCookie("refreshToken", cookieOptions_1.clearAuthCookieOptions);
                 res.status(200).json({ status: "success", data: "Logged out successfully" });
             }
             catch (error) {

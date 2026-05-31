@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const admin_model_1 = require("../frameworks/models/admin.model");
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const cookieOptions_1 = require("../frameworks/utils/cookieOptions");
 class AdminController {
     constructor(adminUsecase) {
         this.adminUsecase = adminUsecase;
@@ -28,11 +29,7 @@ class AdminController {
                 }
                 const admin = yield this.adminUsecase.adminLogin(email, password);
                 const token = admin.token;
-                res.cookie('authTokenAdmin', token, {
-                    httpOnly: true,
-                    secure: true, // Use true if you're serving over HTTPS
-                    sameSite: 'none' // Allows cross-site cookie usage
-                });
+                res.cookie('authTokenAdmin', token, (0, cookieOptions_1.authCookieOptions)());
                 res.status(200).json({ status: "success", data: admin });
             }
             catch (error) {
@@ -160,12 +157,7 @@ class AdminController {
     }
     logout(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            res.cookie('authTokenAdmin', '', {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'none',
-                expires: new Date(0), // Set expiration date to the past
-            });
+            res.clearCookie('authTokenAdmin', cookieOptions_1.clearAuthCookieOptions);
             res.status(200).json({ status: "success", data: "Logged out successfully" });
         });
     }

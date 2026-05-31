@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import IAdminUsecase from "../interfaces/usecase/IAdmin.usecase";
 import { IPostUsecase } from "../interfaces/usecase/IPost.usercase";
 import { IPostRepository } from "../interfaces/repositories/IPost.repository";
+import { authCookieOptions, clearAuthCookieOptions } from "../frameworks/utils/cookieOptions";
 
 export default class AdminController{
     private adminUsecase: IAdminUsecase
@@ -21,11 +22,7 @@ export default class AdminController{
             }
             const admin = await this.adminUsecase.adminLogin(email,password);
             const token = admin.token
-            res.cookie('authTokenAdmin', token, {
-                httpOnly: true,
-                secure: true,  // Use true if you're serving over HTTPS
-                sameSite: 'none'  // Allows cross-site cookie usage
-              });
+            res.cookie('authTokenAdmin', token, authCookieOptions());
 
             
             res.status(200).json({status:"success",data:admin})
@@ -144,12 +141,7 @@ export default class AdminController{
     }
 
     async logout(req: Request, res: Response, next: NextFunction){
-        res.cookie('authTokenAdmin', '', {
-            httpOnly: true,
-            secure: true, 
-            sameSite: 'none',
-            expires: new Date(0), // Set expiration date to the past
-          });
+        res.clearCookie('authTokenAdmin', clearAuthCookieOptions);
         res.status(200).json({status:"success",data:"Logged out successfully"})
     }
 

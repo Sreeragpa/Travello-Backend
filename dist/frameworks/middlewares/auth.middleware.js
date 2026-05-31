@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.authMiddleware = void 0;
 const jwt_utils_1 = require("../utils/jwt.utils");
 const user_model_1 = require("../models/user.model");
+const cookieOptions_1 = require("../utils/cookieOptions");
 const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const authToken = req.cookies.authToken;
@@ -44,18 +45,8 @@ const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
             };
             const token = (0, jwt_utils_1.signJWT)(payload, 15);
             // Send new tokens to the client
-            res.cookie("authToken", token.accessToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "strict",
-                maxAge: 15 * 60 * 1000 // 15 minutes
-            });
-            res.cookie("refreshToken", token.refreshToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "strict",
-                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // Expires in 7 days
-            });
+            res.cookie("authToken", token.accessToken, Object.assign({}, (0, cookieOptions_1.authCookieOptions)(15 * 60 * 1000)));
+            res.cookie("refreshToken", token.refreshToken, Object.assign({}, (0, cookieOptions_1.authCookieOptions)(7 * 24 * 60 * 60 * 1000)));
         }
         // If no valid token is found, return unauthorized
         if (!userData) {
