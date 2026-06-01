@@ -18,6 +18,23 @@ export class UserUsecase implements IUserUsecase {
         this.authRepository = authRepository
         this.followRepository = followRepository
     }
+
+    private async resolveWithTimeout<T>(promise: Promise<T>, fallback: T, timeoutMs = 1000): Promise<T> {
+        let timeoutId: NodeJS.Timeout | undefined;
+
+        try {
+            return await Promise.race([
+                promise,
+                new Promise<T>((resolve) => {
+                    timeoutId = setTimeout(() => resolve(fallback), timeoutMs);
+                }),
+            ]);
+        } finally {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+        }
+    }
     
     async searchUser(userid: string,searchKey: string): Promise<IUser[]> {
        try {
@@ -81,24 +98,26 @@ export class UserUsecase implements IUserUsecase {
     }
     async getUser(userid: string,currentUser: string): Promise<IUser> {
         try {
-            // let isFollowing = false
             const user = await this.userRepository.getUserById(userid);
-        // Check if the current user is following the retrieved user
-        if(!user)throw Error
-        let isFollowing = false;
-        if (userid !== currentUser) {
-            isFollowing = await this.followRepository.isUserFollowing(currentUser, userid);
+            if (!user) {
+                throw new Error(ErrorCode.USER_NOT_FOUND);
+            }
 
-             
-        }
-        const userWithFollowing = {
-            ...user.toObject(),
-            isFollowing: isFollowing,
-            isOnline: await this.userRepository.isUserOnline(userid)
-        } as IUser;
+            const isFollowing = userid !== currentUser
+                ? await this.followRepository.isUserFollowing(currentUser, userid)
+                : false;
 
-        // Return user along with the isFollowing status
-        return userWithFollowing
+            const isOnline = await this.resolveWithTimeout(
+                this.userRepository.isUserOnline(userid),
+                false,
+                1000
+            );
+
+            return {
+                ...user.toObject(),
+                isFollowing,
+                isOnline,
+            } as IUser;
         } catch (error) {
             throw error
         }
