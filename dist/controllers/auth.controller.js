@@ -13,6 +13,7 @@ exports.AuthController = void 0;
 const server_1 = require("../server");
 const redis_1 = require("../frameworks/configs/redis");
 const cookieOptions_1 = require("../frameworks/utils/cookieOptions");
+const jwt_utils_1 = require("../frameworks/utils/jwt.utils");
 class AuthController {
     constructor(authUsecase) {
         this.authUsecase = authUsecase;
@@ -129,19 +130,29 @@ class AuthController {
     }
     logout(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
+            var _a, _b, _c, _d;
             try {
                 const refreshToken = (_a = req.cookies) === null || _a === void 0 ? void 0 : _a.refreshToken;
-                const userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.user_id;
-                yield this.authUsecase.logoutUser(refreshToken);
-                console.log("RESa", userId, req.cookies);
-                if (userId) {
-                    yield (0, redis_1.forceUserOffline)(userId);
-                    server_1.io.in(userId).disconnectSockets(true);
-                }
                 res.clearCookie("authToken", cookieOptions_1.clearAuthCookieOptions);
                 res.clearCookie("refreshToken", cookieOptions_1.clearAuthCookieOptions);
                 res.status(200).json({ status: "success", data: "Logged out successfully" });
+                const tokenToDecode = (_c = (_b = req.cookies) === null || _b === void 0 ? void 0 : _b.refreshToken) !== null && _c !== void 0 ? _c : (_d = req.cookies) === null || _d === void 0 ? void 0 : _d.authToken;
+                const decoded = tokenToDecode ? (0, jwt_utils_1.verifyJWT)(tokenToDecode) : null;
+                const userId = decoded === null || decoded === void 0 ? void 0 : decoded.user_id;
+                void (() => __awaiter(this, void 0, void 0, function* () {
+                    try {
+                        if (refreshToken) {
+                            yield this.authUsecase.logoutUser(refreshToken);
+                        }
+                        if (userId) {
+                            yield (0, redis_1.forceUserOffline)(userId);
+                            server_1.io.in(userId).disconnectSockets(true);
+                        }
+                    }
+                    catch (error) {
+                        console.error("Logout cleanup failed:", error);
+                    }
+                }))();
             }
             catch (error) {
                 next(error);

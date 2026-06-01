@@ -22,6 +22,24 @@ class UserUsecase {
         this.authRepository = authRepository;
         this.followRepository = followRepository;
     }
+    resolveWithTimeout(promise_1, fallback_1) {
+        return __awaiter(this, arguments, void 0, function* (promise, fallback, timeoutMs = 1000) {
+            let timeoutId;
+            try {
+                return yield Promise.race([
+                    promise,
+                    new Promise((resolve) => {
+                        timeoutId = setTimeout(() => resolve(fallback), timeoutMs);
+                    }),
+                ]);
+            }
+            finally {
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                }
+            }
+        });
+    }
     searchUser(userid, searchKey) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -88,18 +106,16 @@ class UserUsecase {
     getUser(userid, currentUser) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // let isFollowing = false
                 const user = yield this.userRepository.getUserById(userid);
-                // Check if the current user is following the retrieved user
-                if (!user)
-                    throw Error;
-                let isFollowing = false;
-                if (userid !== currentUser) {
-                    isFollowing = yield this.followRepository.isUserFollowing(currentUser, userid);
+                if (!user) {
+                    throw new Error(errorCodes_enum_1.ErrorCode.USER_NOT_FOUND);
                 }
-                const userWithFollowing = Object.assign(Object.assign({}, user.toObject()), { isFollowing: isFollowing, isOnline: yield this.userRepository.isUserOnline(userid) });
-                // Return user along with the isFollowing status
-                return userWithFollowing;
+                const isFollowing = userid !== currentUser
+                    ? yield this.followRepository.isUserFollowing(currentUser, userid)
+                    : false;
+                const isOnline = yield this.resolveWithTimeout(this.userRepository.isUserOnline(userid), false, 1000);
+                return Object.assign(Object.assign({}, user.toObject()), { isFollowing,
+                    isOnline });
             }
             catch (error) {
                 throw error;

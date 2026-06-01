@@ -5,6 +5,8 @@ import { AuthenticatedRequest } from "../frameworks/middlewares/auth.middleware"
 import { io } from "../server";
 import { forceUserOffline } from "../frameworks/configs/redis";
 import { authCookieOptions, clearAuthCookieOptions } from "../frameworks/utils/cookieOptions";
+import { verifyJWT } from "../frameworks/utils/jwt.utils";
+import { IJwtPayload } from "../interfaces/usecase/IUser.usecase";
 
 export class AuthController {
     private authUsecase: IAuthUsecase;
@@ -127,20 +129,28 @@ export class AuthController {
     async logout(req: AuthenticatedRequest, res: Response, next: NextFunction) {
         try {
             const refreshToken = req.cookies?.refreshToken;
-            const userId = req.user?.user_id;
-            await this.authUsecase.logoutUser(refreshToken);
-
-            console.log("RESa",userId,req.cookies)
-
-            if (userId) {
-                await forceUserOffline(userId);
-                io.in(userId).disconnectSockets(true);
-            }
-
             res.clearCookie("authToken", clearAuthCookieOptions);
             res.clearCookie("refreshToken", clearAuthCookieOptions);
-
             res.status(200).json({ status: "success", data: "Logged out successfully" });
+
+            const tokenToDecode = req.cookies?.refreshToken ?? req.cookies?.authToken;
+            const decoded = tokenToDecode ? verifyJWT<IJwtPayload>(tokenToDecode) : null;
+            const userId = decoded?.user_id;
+
+            void (async () => {
+                try {
+                    if (refreshToken) {
+                        await this.authUsecase.logoutUser(refreshToken);
+                    }
+
+                    if (userId) {
+                        await forceUserOffline(userId);
+                        io.in(userId).disconnectSockets(true);
+                    }
+                } catch (error) {
+                    console.error("Logout cleanup failed:", error);
+                }
+            })();
         } catch (error) {
             next(error);
         }
