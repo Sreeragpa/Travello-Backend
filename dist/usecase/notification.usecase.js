@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NotificationUsecase = void 0;
-const server_1 = require("../server");
 const socketioHandlers_1 = require("../frameworks/configs/socketioHandlers");
+const socket_1 = require("../frameworks/configs/socket");
 class NotificationUsecase {
     constructor(notificationRepository, userRepository) {
         this.notificationRepository = notificationRepository;
@@ -36,6 +36,7 @@ class NotificationUsecase {
     }
     createNotification(data) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 const notification = yield this.notificationRepository.create(data);
                 //   Socketio Notification to the recieved User
@@ -43,7 +44,7 @@ class NotificationUsecase {
                 const { username } = yield this.userRepository.getUsername(data.sender);
                 const notificationdata = Object.assign(Object.assign({}, notification), { username });
                 if (followedUserSocketId) {
-                    server_1.io.to(followedUserSocketId).emit("notification", {
+                    (_a = (0, socket_1.getSocketIO)()) === null || _a === void 0 ? void 0 : _a.to(followedUserSocketId).emit("notification", {
                         success: true,
                         data: notificationdata,
                     });

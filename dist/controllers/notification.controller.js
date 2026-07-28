@@ -11,13 +11,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NotificationController = void 0;
 const notification_enums_1 = require("../enums/notification.enums");
-const server_1 = require("../server");
+const socket_1 = require("../frameworks/configs/socket");
 class NotificationController {
     constructor(notificationUsecase) {
         this.notificationUsecase = notificationUsecase;
     }
     sendNotification(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 const user = req.user;
                 console.log(req.body);
@@ -32,7 +33,7 @@ class NotificationController {
                 const data = yield this.notificationUsecase.createNotification(notificationdata);
                 const followedUserSocketId = 'userSocketMap[followingid];';
                 if (followedUserSocketId) {
-                    server_1.io.to(followedUserSocketId).emit("notification", {
+                    (_a = (0, socket_1.getSocketIO)()) === null || _a === void 0 ? void 0 : _a.to(followedUserSocketId).emit("notification", {
                         success: true,
                         data: "result",
                     });

@@ -4,7 +4,7 @@ import { AuthenticatedRequest } from "../frameworks/middlewares/auth.middleware"
 import { INotificationUsecase } from "../interfaces/usecase/INotification.usecase";
 import { IJwtPayload } from "../interfaces/usecase/IUser.usecase";
 import { NOTIFICATION_TYPE } from "../enums/notification.enums";
-import { io } from "../server";
+import { getSocketIO } from "../frameworks/configs/socket";
 
 export class NotificationController{
     private notificationUsecase : INotificationUsecase
@@ -30,7 +30,7 @@ export class NotificationController{
             const data = await this.notificationUsecase.createNotification(notificationdata);
             const followedUserSocketId = 'userSocketMap[followingid];'
             if (followedUserSocketId) {
-              io.to(followedUserSocketId).emit("notification", {
+              getSocketIO()?.to(followedUserSocketId).emit("notification", {
                 success: true,
                 data: "result",
               });

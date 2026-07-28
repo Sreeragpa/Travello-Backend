@@ -7,7 +7,6 @@ import { NotificationUsecase } from "../../usecase/notification.usecase";
 import { verifyJWT } from '../utils/jwt.utils';
 import { IJwtPayload } from '../../interfaces/usecase/IUser.usecase';
 import dotenv from "dotenv";
-import { io } from "../../server";
 import { NOTIFICATION_TYPE } from "../../enums/notification.enums";
 import { INotification } from "../../entities/notification.entity";
 import { ConversationRepository } from "../../repository/conversation.repository";

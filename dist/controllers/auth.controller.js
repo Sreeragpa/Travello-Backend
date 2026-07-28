@@ -10,10 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
-const server_1 = require("../server");
 const redis_1 = require("../frameworks/configs/redis");
 const cookieOptions_1 = require("../frameworks/utils/cookieOptions");
 const jwt_utils_1 = require("../frameworks/utils/jwt.utils");
+const socket_1 = require("../frameworks/configs/socket");
 class AuthController {
     constructor(authUsecase) {
         this.authUsecase = authUsecase;
@@ -140,13 +140,14 @@ class AuthController {
                 const decoded = tokenToDecode ? (0, jwt_utils_1.verifyJWT)(tokenToDecode) : null;
                 const userId = decoded === null || decoded === void 0 ? void 0 : decoded.user_id;
                 void (() => __awaiter(this, void 0, void 0, function* () {
+                    var _a;
                     try {
                         if (refreshToken) {
                             yield this.authUsecase.logoutUser(refreshToken);
                         }
                         if (userId) {
                             yield (0, redis_1.forceUserOffline)(userId);
-                            server_1.io.in(userId).disconnectSockets(true);
+                            (_a = (0, socket_1.getSocketIO)()) === null || _a === void 0 ? void 0 : _a.in(userId).disconnectSockets(true);
                         }
                     }
                     catch (error) {

@@ -2,9 +2,9 @@ import { INotification } from "../entities/notification.entity";
 import { INotificationRepository } from "../interfaces/repositories/INotification.repository";
 import { INotificationUsecase } from "../interfaces/usecase/INotification.usecase";
 
-import { io } from "../server";
 import { userSocketMap } from "../frameworks/configs/socketioHandlers";
 import { IUserRepository } from "../interfaces/repositories/IUser.repository";
+import { getSocketIO } from "../frameworks/configs/socket";
 
 export class NotificationUsecase implements INotificationUsecase {
   private notificationRepository: INotificationRepository;
@@ -36,10 +36,10 @@ export class NotificationUsecase implements INotificationUsecase {
     //   Socketio Notification to the recieved User
         const followedUserSocketId = userSocketMap[data.recipient];
         const {username} = await this.userRepository.getUsername(data.sender);
-        const notificationdata:any = {...notification, username}
+      const notificationdata:any = {...notification, username}
         
       if (followedUserSocketId) {
-        io.to(followedUserSocketId).emit("notification", {
+        getSocketIO()?.to(followedUserSocketId).emit("notification", {
           success: true,
           data: notificationdata,
         });
