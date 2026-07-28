@@ -21,6 +21,11 @@ setSocketIO(io);
 
 // Start Server
 const PORT = process.env.PORT || 9000;
-server.listen(PORT,()=>{
+
+if (!process.env.VERCEL) {
+  server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
-})
+  });
+}
+
+export default app;

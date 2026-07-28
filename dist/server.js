@@ -22,6 +22,9 @@ exports.io = (0, socketio_1.default)(server);
 // export const notificationUsecase = new NotificationUsecase(notificationRepository, io, userSocketMap);
 // Start Server
 const PORT = process.env.PORT || 9000;
-server.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+    server.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+    });
+}
+exports.default = app_1.default;
