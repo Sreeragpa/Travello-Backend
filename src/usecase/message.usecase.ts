@@ -4,7 +4,7 @@ import { userSocketMap } from "../frameworks/configs/socketioHandlers";
 import { IConversationRepository } from "../interfaces/repositories/IConversation.repositories";
 import { IMessageRepository } from "../interfaces/repositories/IMessage.repository";
 import { IMessageUsecase } from "../interfaces/usecase/IMessage.usecase";
-import { io } from "../server";
+import { getSocketIO } from "../frameworks/configs/socket";
 export class MessageUsecase implements IMessageUsecase{
     private messageRepository:IMessageRepository
     private conversationRepository: IConversationRepository
@@ -18,7 +18,7 @@ export class MessageUsecase implements IMessageUsecase{
             throw new Error(ErrorCode.CONVERSATION_DOESNOT_EXIST)
         }
         const message = await this.messageRepository.createMessage(conversation_id,userid,text);
-        io.to(conversation_id).emit("message", { status: 'success', data: message });
+        getSocketIO()?.to(conversation_id).emit("message", { status: 'success', data: message });
         const usersinCoversation = await this.conversationRepository.getUsersInConversation(conversation_id);
 
          // Update unread message map for all users except the sender
@@ -27,7 +27,7 @@ export class MessageUsecase implements IMessageUsecase{
 
         // Send Notification to all users in that conversation
             usersinCoversation.memberDetails?.forEach((user)=>{
-                io.to( userSocketMap[user._id]).emit('newMessageNotification', { conversation_id, message });
+                getSocketIO()?.to( userSocketMap[user._id]).emit('newMessageNotification', { conversation_id, message });
             })
             
         return message
@@ -46,7 +46,7 @@ export class MessageUsecase implements IMessageUsecase{
             const messages = await this.messageRepository.getMessagesByConversationId(conversation_id,userid);
             // Marking Conversation as Read for User
             await this.conversationRepository.markAsRead(conversation_id as string, userid);
-            io.to( userSocketMap[userid]).emit('newMessageNotification', { conversation_id, });
+            getSocketIO()?.to( userSocketMap[userid]).emit('newMessageNotification', { conversation_id, });
             return messages;
     }
 

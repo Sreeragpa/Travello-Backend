@@ -2,11 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import { IAuthUsecase } from "../interfaces/usecase/IAuth.usecase";
 import { ErrorCode } from "../enums/errorCodes.enum";
 import { AuthenticatedRequest } from "../frameworks/middlewares/auth.middleware";
-import { io } from "../server";
 import { forceUserOffline } from "../frameworks/configs/redis";
 import { authCookieOptions, clearAuthCookieOptions } from "../frameworks/utils/cookieOptions";
 import { verifyJWT } from "../frameworks/utils/jwt.utils";
 import { IJwtPayload } from "../interfaces/usecase/IUser.usecase";
+import { getSocketIO } from "../frameworks/configs/socket";
 
 export class AuthController {
     private authUsecase: IAuthUsecase;
@@ -145,7 +145,7 @@ export class AuthController {
 
                     if (userId) {
                         await forceUserOffline(userId);
-                        io.in(userId).disconnectSockets(true);
+                        getSocketIO()?.in(userId).disconnectSockets(true);
                     }
                 } catch (error) {
                     console.error("Logout cleanup failed:", error);

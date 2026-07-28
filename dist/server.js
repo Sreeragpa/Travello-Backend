@@ -9,6 +9,7 @@ const db_1 = __importDefault(require("./frameworks/configs/db"));
 const qdrant_1 = require("./frameworks/configs/qdrant");
 const http_1 = require("http");
 const socketio_1 = __importDefault(require("./frameworks/configs/socketio"));
+const socket_1 = require("./frameworks/configs/socket");
 // Connect Database
 (0, db_1.default)();
 (0, qdrant_1.connectQdrant)();
@@ -16,6 +17,7 @@ const socketio_1 = __importDefault(require("./frameworks/configs/socketio"));
 const server = (0, http_1.createServer)(app_1.default);
 // Initialize Socket.IO server
 exports.io = (0, socketio_1.default)(server);
+(0, socket_1.setSocketIO)(exports.io);
 // const notificationRepository = new NotificationRepository();
 // export const notificationUsecase = new NotificationUsecase(notificationRepository, io, userSocketMap);
 // Start Server

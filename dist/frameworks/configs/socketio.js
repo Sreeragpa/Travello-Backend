@@ -11,9 +11,8 @@ function initializeSocketIO(server) {
         cors: {
             origin: [
                 'http://localhost:4200',
-                'https://travello.srg.buzz',
-                'http://travello.srg.buzz',
-                'https://travello.srgweb.site',
+                'https://travello-sigma.vercel.app',
+                'https://travello.sreerag.site',
             ],
             methods: ["GET", "POST"],
             credentials: true

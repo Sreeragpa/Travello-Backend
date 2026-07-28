@@ -3,6 +3,7 @@ import connectDb from "./frameworks/configs/db";
 import { connectQdrant } from "./frameworks/configs/qdrant";
 import {createServer} from "http"
 import initializeSocketIO from "./frameworks/configs/socketio";
+import { setSocketIO } from "./frameworks/configs/socket";
 
 
 // Connect Database
@@ -14,6 +15,7 @@ const server = createServer(app);
 
 // Initialize Socket.IO server
 export const io = initializeSocketIO(server);
+setSocketIO(io);
 // const notificationRepository = new NotificationRepository();
 // export const notificationUsecase = new NotificationUsecase(notificationRepository, io, userSocketMap);
 
@@ -22,4 +24,3 @@ const PORT = process.env.PORT || 9000;
 server.listen(PORT,()=>{
     console.log(`Server running on http://localhost:${PORT}`);
 })
-
