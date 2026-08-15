@@ -1,18 +1,21 @@
 import type { CookieOptions } from "express";
 
-const isProduction = () => process.env.NODE_ENV === "production";
+// Vercel does not always set NODE_ENV=production; use VERCEL too so cross-origin
+// cookies get SameSite=None; Secure (required for fetch from another domain).
+const useCrossOriginCookies = () =>
+  process.env.NODE_ENV === "production" || !!process.env.VERCEL;
 
 export const authCookieOptions = (maxAge?: number): CookieOptions => ({
   httpOnly: true,
-  secure: isProduction(),
-  sameSite: isProduction() ? "none" : "lax",
+  secure: useCrossOriginCookies(),
+  sameSite: useCrossOriginCookies() ? "none" : "lax",
   path: "/",
   ...(typeof maxAge === "number" ? { maxAge } : {}),
 });
 
 export const clearAuthCookieOptions: CookieOptions = {
   httpOnly: true,
-  secure: isProduction(),
-  sameSite: isProduction() ? "none" : "lax",
+  secure: useCrossOriginCookies(),
+  sameSite: useCrossOriginCookies() ? "none" : "lax",
   path: "/",
 };
