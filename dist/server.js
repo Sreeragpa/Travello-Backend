@@ -13,7 +13,7 @@ const socket_1 = require("./frameworks/configs/socket");
 // Connect Database
 (0, db_1.default)();
 (0, qdrant_1.connectQdrant)();
-// Create HTTP server and attach Express app to it
+// Create HTTP server and attach Express app to it so Socket.IO can hook into the same listener
 const server = (0, http_1.createServer)(app_1.default);
 // Initialize Socket.IO server
 exports.io = (0, socketio_1.default)(server);
@@ -27,4 +27,4 @@ if (!process.env.VERCEL) {
         console.log(`Server running on http://localhost:${PORT}`);
     });
 }
-exports.default = app_1.default;
+exports.default = server;

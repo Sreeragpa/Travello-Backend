@@ -10,7 +10,7 @@ import { setSocketIO } from "./frameworks/configs/socket";
 connectDb();
 connectQdrant();
 
-// Create HTTP server and attach Express app to it
+// Create HTTP server and attach Express app to it so Socket.IO can hook into the same listener
 const server = createServer(app);
 
 // Initialize Socket.IO server
@@ -28,4 +28,4 @@ if (!process.env.VERCEL) {
   });
 }
 
-export default app;
+export default server;
